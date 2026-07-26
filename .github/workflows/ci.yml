@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: 'npm'
+
+    - name: Setup Rust
+      uses: dtolnay/rust-toolchain@stable
+
+    - name: Install Frontend Dependencies
+      run: npm install --ignore-scripts
+
+    - name: Build Frontend
+      run: npm run build
+
+    - name: Run Frontend Tests
+      run: npm run test
+
+    - name: Run Smart Contract Tests
+      run: cargo test
+      working-directory: ./contracts
