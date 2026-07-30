@@ -1,1 +1,0 @@
-C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\target\wasm32-unknown-unknown\release\libcampaign_manager.rlib: C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\campaign-manager\src\lib.rs C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\campaign-manager\src\types.rs

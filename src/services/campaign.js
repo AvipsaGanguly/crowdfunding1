@@ -7,17 +7,16 @@ const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID;
 const cmContract = new Contract(CAMPAIGN_MANAGER_ID);
 const dmContract = new Contract(DONATION_MANAGER_ID);
 
-export const buildCreateCampaignTx = async (address, { title, description, goal, deadline, category, imageUrl }) => {
+export const buildCreateCampaignTx = async (address, { title, description, goal, deadline, category }) => {
   return buildTransaction(address, (builder) => {
     builder.addOperation(
       cmContract.call("create_campaign",
         nativeToScVal(address, { type: 'address' }),
         nativeToScVal(title, { type: 'string' }),
-        nativeToScVal(description, { type: 'string' }),
+        nativeToScVal(description || '', { type: 'string' }),
         nativeToScVal(goal, { type: 'i128' }),
         nativeToScVal(deadline, { type: 'u64' }),
-        nativeToScVal(category, { type: 'string' }),
-        nativeToScVal(imageUrl, { type: 'string' })
+        nativeToScVal(category, { type: 'string' })
       )
     );
   });

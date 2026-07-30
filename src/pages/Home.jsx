@@ -48,7 +48,7 @@ const Home = () => {
           campaigns.map((c, idx) => {
             const id = c.id !== undefined && c.id !== null ? String(c.id) : String(idx + 1);
             const title = c.title ? String(c.title) : 'Untitled Campaign';
-            const desc = c.description ? String(c.description) : 'No description provided.';
+            const desc = c.description && String(c.description).trim() !== '' ? String(c.description) : 'No description provided.';
             const goal = c.goal !== undefined && c.goal !== null ? Number(c.goal) / 10000000 : 1000;
             const deadline = c.deadline ? Number(c.deadline) : Date.now() / 1000 + 30 * 86400;
             const daysLeft = Math.max(0, Math.floor((deadline - Date.now() / 1000) / 86400));
@@ -64,6 +64,7 @@ const Home = () => {
                 raised={raised} 
                 goal={goal} 
                 daysLeft={daysLeft} 
+                image={c.image || c.imageUrl}
               />
             );
           })

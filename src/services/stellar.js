@@ -174,26 +174,24 @@ export async function sendSorobanTransaction(buildTxFn) {
  * Creates a new crowdfunding campaign on-chain.
  * 
  * @param {Object|string} titleOrParams - Campaign details object or title string
- * @param {string} [description] - Campaign description
+ * @param {string} [description] - Campaign description (optional)
  * @param {number|string} [goal] - Target goal amount in XLM
  * @param {number|string} [durationDaysOrDeadline] - Campaign duration in days or deadline timestamp
  * @param {string} [category='General'] - Campaign category
- * @param {string} [imageUrl=''] - Image URL
  * @returns {Promise<{hash: string, explorerUrl: string, status: string}>} Transaction result
  */
-export async function createCampaign(titleOrParams, description, goal, durationDaysOrDeadline, category = 'General', imageUrl = '') {
+export async function createCampaign(titleOrParams, description, goal, durationDaysOrDeadline, category = 'General') {
   let campaignData;
 
   if (typeof titleOrParams === 'object' && titleOrParams !== null) {
-    const { title, description: desc, goal: g, durationDays, deadline, category: cat, imageUrl: img } = titleOrParams;
+    const { title, description: desc, goal: g, durationDays, deadline, category: cat } = titleOrParams;
     const computedDeadline = deadline || (Math.floor(Date.now() / 1000) + (durationDays || 30) * 86400);
     campaignData = {
       title,
-      description: desc,
+      description: desc || '',
       goal: Number(g),
       deadline: computedDeadline,
       category: cat || 'General',
-      imageUrl: img || '',
     };
   } else {
     const computedDeadline = typeof durationDaysOrDeadline === 'number' && durationDaysOrDeadline < 1000000000
@@ -202,11 +200,10 @@ export async function createCampaign(titleOrParams, description, goal, durationD
 
     campaignData = {
       title: titleOrParams,
-      description,
+      description: description || '',
       goal: Number(goal),
       deadline: computedDeadline,
       category,
-      imageUrl,
     };
   }
 

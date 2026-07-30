@@ -77,13 +77,17 @@ const CampaignDetails = () => {
   }
 
   const title = campaign?.title ? String(campaign.title) : `Campaign #${id}`;
-  const desc = campaign?.description ? String(campaign.description) : 'No description available for this campaign.';
+  const desc = campaign?.description && String(campaign.description).trim() !== ''
+    ? String(campaign.description)
+    : 'No description provided.';
   const goal = campaign?.goal !== undefined && campaign.goal !== null ? Number(campaign.goal) / 10000000 : 1000;
   const deadline = campaign?.deadline ? Number(campaign.deadline) : Date.now() / 1000 + 30 * 86400;
   const daysLeft = Math.max(0, Math.floor((deadline - Date.now() / 1000) / 86400));
   const raisedStroops = campaign?.raised !== undefined && campaign?.raised !== null ? Number(campaign.raised) : 0;
   const raised = raisedStroops / 10000000;
   const progress = goal > 0 ? Math.min(100, Math.round((raised / goal) * 100)) : 0;
+  const imageUrl = campaign?.image || campaign?.imageUrl;
+  const hasImage = Boolean(imageUrl && String(imageUrl).trim() !== '');
 
   return (
     <div className="animate-fade-in" style={{ padding: '2rem 5%', maxWidth: '900px', margin: '0 auto' }}>
@@ -100,7 +104,12 @@ const CampaignDetails = () => {
       </Link>
 
       <div className="glass" style={{ padding: '2rem', marginTop: '1rem' }}>
-        <h2 className="section-title" style={{ marginTop: 0, textAlign: 'left' }}>{title}</h2>
+        {hasImage && (
+          <div style={{ width: '100%', maxHeight: '350px', overflow: 'hidden', borderRadius: 'var(--radius-md)', marginBottom: '1.5rem' }}>
+            <img src={imageUrl} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+          </div>
+        )}
+        <h2 className="section-title" style={{ marginTop: 0, textAlign: 'left', paddingLeft: 0 }}>{title}</h2>
         <p style={{ color: 'var(--text-muted)', lineHeight: '1.6', marginBottom: '2rem' }}>{desc}</p>
 
         <div style={{ marginBottom: '1.5rem' }}>

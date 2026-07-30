@@ -1,3 +1,28 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Production & Build outputs
+dist
+dist-ssr
+build
+.vercel
+
+# Rust / Soroban Build Artifacts & Snapshots
+target/
+**/target/
+contracts/target/
+*.wasm
+!contracts/**/*.wasm
+test_snapshots/
+**/test_snapshots/
+.soroban/
+
+# Environment & Local Secrets
+.env
+.env.local
+.env.*.local
+
 # Logs
 logs
 *.log
@@ -6,12 +31,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-.env
 
 # Editor directories and files
 .vscode/*

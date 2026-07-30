@@ -1,1 +1,0 @@
-{"rustc":1562763049001146449,"features":"[\"i128\"]","declared_features":"[\"const-generics\", \"core_hint_black_box\", \"default\", \"i128\", \"nightly\", \"std\"]","target":13005322332938347306,"profile":9102090753619238930,"path":1571713782912528495,"deps":[],"local":[{"Precalculated":"2.6.1"}],"rustflags":[],"config":8247474407144887393,"compile_kind":0}

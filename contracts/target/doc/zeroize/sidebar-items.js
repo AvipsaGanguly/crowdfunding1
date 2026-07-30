@@ -1,1 +1,0 @@
-window.SIDEBAR_ITEMS = {"fn":["optimization_barrier","zeroize_flat_type","zeroize_stack"],"struct":["Zeroizing"],"trait":["DefaultIsZeroes","TryZeroize","Zeroize","ZeroizeOnDrop"]};

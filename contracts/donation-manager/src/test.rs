@@ -51,7 +51,7 @@ fn test_get_campaign_funds_unregistered_returns_zero() {
 fn test_register_campaign_initializes_zero_funds() {
     let (_, dm, _, _) = setup_dm_only();
     // mock_all_auths satisfies cm.require_auth() inside register_campaign
-    dm.register_campaign(&42u64).expect("register must succeed under mocked auth");
+    dm.register_campaign(&42u64);
     assert_eq!(dm.get_campaign_funds(&42u64), 0i128);
 }
 
@@ -62,7 +62,7 @@ fn test_register_campaign_initializes_zero_funds() {
 #[test]
 fn test_token_balance_sanity() {
     let (env, _, token_addr, _) = setup_dm_only();
-    let token_admin = Address::generate(&env);
+    let _token_admin = Address::generate(&env);
     let token = StellarAssetClient::new(&env, &token_addr);
     let user = Address::generate(&env);
 

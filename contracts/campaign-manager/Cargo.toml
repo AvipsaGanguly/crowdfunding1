@@ -11,7 +11,7 @@ soroban-sdk = "20.0.0"
 
 [dev-dependencies]
 soroban-sdk = { version = "20.0.0", features = ["testutils"] }
-donation-manager = { path = "../donation-manager" }
+donation-manager = { path = "../donation-manager", features = ["testutils"] }
 
 [features]
 testutils = ["soroban-sdk/testutils"]

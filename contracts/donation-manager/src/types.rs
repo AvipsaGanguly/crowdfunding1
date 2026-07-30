@@ -10,7 +10,6 @@ pub struct CampaignMetadata {
     pub goal: i128,
     pub deadline: u64,
     pub category: String,
-    pub image_url: String,
     pub active: bool,
 }
 

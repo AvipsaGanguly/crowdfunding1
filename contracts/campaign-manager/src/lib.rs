@@ -26,7 +26,6 @@ impl CampaignManager {
         goal: i128,
         deadline: u64,
         category: String,
-        image_url: String,
     ) -> Result<u64, Error> {
         owner.require_auth();
 
@@ -73,7 +72,6 @@ impl CampaignManager {
             goal,
             deadline,
             category,
-            image_url,
             active: true,
         };
 
