@@ -16,13 +16,27 @@ impl DonationManager {
     }
 
     /// Register a campaign. Can only be called by the Campaign Manager.
-    pub fn register_campaign(env: Env, campaign_id: u64, _owner: Address) -> Result<(), Error> {
+    pub fn register_campaign(env: Env, campaign_id: u64) -> Result<(), Error> {
         let cm: Address = env.storage().instance().get(&DataKey::CampaignManager).ok_or(Error::SetupIncomplete)?;
+        
+        // Ensure the transaction was authorized by the campaign manager.
+        // The CampaignManager must call env.authorize_as_current_contract()
+        // before invoking this function, otherwise Error(Auth, InvalidAction)
+        // is thrown by the Soroban host because require_auth() is in a
+        // sub-invocation, not the root invocation.
         cm.require_auth();
 
         // Initialize funds to 0
         env.storage().persistent().set(&DataKey::CampaignFunds(campaign_id), &0i128);
         Ok(())
+    }
+
+    /// Returns the total amount raised for a campaign. Returns 0 if not registered.
+    pub fn get_campaign_funds(env: Env, campaign_id: u64) -> i128 {
+        env.storage()
+            .persistent()
+            .get(&DataKey::CampaignFunds(campaign_id))
+            .unwrap_or(0i128)
     }
 
     pub fn donate(env: Env, donor: Address, campaign_id: u64, amount: i128) -> Result<(), Error> {

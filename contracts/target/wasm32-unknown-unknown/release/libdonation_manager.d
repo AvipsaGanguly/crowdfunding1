@@ -1,0 +1,1 @@
+C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\target\wasm32-unknown-unknown\release\libdonation_manager.rlib: C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\events.rs C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\lib.rs C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\types.rs

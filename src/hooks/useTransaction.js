@@ -26,9 +26,11 @@ export const useTransaction = () => {
       // Assemble actual tx with simulated footprint/fees
       const preparedTx = rpc.assembleTransaction(tx, sim).build();
 
-      // 2. Sign
+      // 2. Sign — returns { signedTxXdr, signerAddress }
       addToast('Please sign the transaction in your wallet...', 'info');
-      const signedXdr = await signTransaction(preparedTx.toXDR());
+      const signResult = await signTransaction(preparedTx.toXDR());
+      // signResult may be { signedTxXdr } (kit v2) or a raw XDR string (older)
+      const signedXdr = signResult?.signedTxXdr ?? signResult;
 
       // 3. Submit
       addToast('Submitting to network...', 'info');

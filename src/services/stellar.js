@@ -71,11 +71,13 @@ function parseStellarError(error) {
  */
 function isSimulationError(sim) {
   if (!sim) return true;
-  if (rpc?.Api?.isSimulationError) {
-    return rpc.Api.isSimulationError(sim);
+  // Use bracket notation or intermediate assignment to bypass Vite's strict static analysis of the rpc import namespace
+  const rpcRef = rpc;
+  if (rpcRef?.Api?.isSimulationError) {
+    return rpcRef.Api.isSimulationError(sim);
   }
-  if (typeof rpc?.isSimulationError === 'function') {
-    return rpc.isSimulationError(sim);
+  if (typeof rpcRef?.isSimulationError === 'function') {
+    return rpcRef.isSimulationError(sim);
   }
   return Boolean(sim.error || sim.isError);
 }
@@ -123,7 +125,7 @@ export async function sendSorobanTransaction(buildTxFn) {
     let signedXdr;
     try {
       const signedResult = await signTransaction(preparedTx.toXDR());
-      signedXdr = typeof signedResult === 'string' ? signedResult : (signedResult?.signedXdr || signedResult);
+      signedXdr = typeof signedResult === 'string' ? signedResult : (signedResult?.signedXdr || signedResult?.signedTxXdr || signedResult);
     } catch (signErr) {
       throw parseStellarError(signErr);
     }
@@ -145,11 +147,22 @@ export async function sendSorobanTransaction(buildTxFn) {
     }
 
     const explorerUrl = `${EXPLORER_BASE_URL}${hash}`;
+    const ledger = pollResult?.ledger || pollResult?.latestLedger || 'N/A';
+    let timestamp = 'N/A';
+    if (pollResult?.latestLedgerCloseTime) {
+      timestamp = new Date(pollResult.latestLedgerCloseTime * 1000).toLocaleString();
+    } else if (pollResult?.createdAt) {
+      timestamp = new Date(pollResult.createdAt * 1000).toLocaleString();
+    } else {
+      timestamp = new Date().toLocaleString();
+    }
 
     return {
       hash,
       explorerUrl,
-      status: 'SUCCESS',
+      status: pollResult?.status || 'SUCCESS',
+      ledger: String(ledger),
+      timestamp,
       result: pollResult,
     };
   } catch (err) {
@@ -211,7 +224,7 @@ export async function createCampaign(titleOrParams, description, goal, durationD
  * 
  * @param {number|string} campaignId - Target campaign ID
  * @param {number|string} amount - Donation amount in XLM (stroops/units)
- * @returns {Promise<{hash: string, explorerUrl: string, status: string}>} Transaction result
+ * @returns {Promise<{hash: string, explorerUrl: string, status: string, ledger: string, timestamp: string, donorAddress: string, amountXLM: number}>} Transaction result
  */
 export async function donate(campaignId, amount) {
   const parsedId = Number(campaignId);
@@ -225,9 +238,19 @@ export async function donate(campaignId, amount) {
     throw new Error('Invalid donation amount: Amount must be greater than zero.');
   }
 
-  return sendSorobanTransaction((sourceAddress) =>
+  const activeWallet = getActiveWallet();
+
+  const txResult = await sendSorobanTransaction((sourceAddress) =>
     buildDonateTx(sourceAddress, parsedId, parsedAmount)
   );
+
+  return {
+    ...txResult,
+    campaignId: parsedId,
+    amountStroops: parsedAmount,
+    amountXLM: parsedAmount / 10000000,
+    donorAddress: activeWallet?.address || 'N/A',
+  };
 }
 
 /**

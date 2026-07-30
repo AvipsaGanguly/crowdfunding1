@@ -2,27 +2,34 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 
 let mockShouldReject = false;
 
-// Properly mock StellarWalletsKit as a constructor function
+// Properly mock StellarWalletsKit as an object with static methods
 vi.mock('@creit.tech/stellar-wallets-kit', () => {
   let selectedWallet = 'freighter';
   
-  function MockStellarWalletsKit() {
-    this.setWallet = vi.fn((walletId) => {
+  const MockStellarWalletsKit = {
+    init: vi.fn(),
+    setWallet: vi.fn((walletId) => {
       selectedWallet = walletId;
-    });
-    this.getAddress = vi.fn(async () => {
+    }),
+    getAddress: vi.fn(async () => {
+      if (mockShouldReject) {
+        throw new Error('User denied wallet connection request');
+      }
+      return { address: mockAddress };
+    }),
+    fetchAddress: vi.fn(async () => {
       if (mockShouldReject) {
         throw new Error('User denied wallet connection request');
       }
       return { address: 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF' };
-    });
-    this.signTransaction = vi.fn(async (xdr) => {
+    }),
+    signTransaction: vi.fn(async (xdr) => {
       if (xdr === 'INVALID_REJECT') {
         throw new Error('User cancelled transaction signing');
       }
-      return { signedXdr: 'SIGNED_' + xdr };
-    });
-  }
+      return { signedTxXdr: 'SIGNED_' + xdr }; // Note: returns signedTxXdr, but our code might just expect signedResult
+    })
+  };
 
   return {
     StellarWalletsKit: MockStellarWalletsKit,
@@ -109,7 +116,7 @@ describe('wallet.js Service', () => {
   it('signs transaction when wallet is connected', async () => {
     await connectWallet(SUPPORTED_WALLETS.FREIGHTER);
     const res = await signTransaction('TEST_UNSIGNED_XDR');
-    expect(res).toEqual({ signedXdr: 'SIGNED_TEST_UNSIGNED_XDR' });
+    expect(res).toEqual({ signedTxXdr: 'SIGNED_TEST_UNSIGNED_XDR' });
   });
 
   it('throws error when trying to sign transaction without connected wallet', async () => {

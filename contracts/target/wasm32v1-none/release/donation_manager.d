@@ -1,0 +1,1 @@
+C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\target\wasm32v1-none\release\donation_manager.wasm: C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\events.rs C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\lib.rs C:\Users\HP\OneDrive\Desktop\crowdfunding1\contracts\donation-manager\src\types.rs

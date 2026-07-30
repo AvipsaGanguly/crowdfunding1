@@ -1,60 +1,72 @@
-
 #![cfg(test)]
 
+//! Unit tests for DonationManager in isolation.
+//!
+//! The cross-contract integration test (create_campaign → register_campaign)
+//! lives in campaign-manager/src/test.rs where donation-manager is a plain
+//! dev-dependency. This avoids the stellar-xdr/arbitrary version conflict
+//! that occurs when testutils features are transitively propagated.
+
 use super::*;
-use soroban_sdk::{testutils::{Address as _, Ledger}, Address, Env};
-use soroban_sdk::token::StellarAssetClient;
+use soroban_sdk::{
+    testutils::{Address as _, Ledger},
+    token::StellarAssetClient,
+    Address, Env,
+};
 
-// Import campaign manager to register it
-use campaign_manager::{CampaignManager, CampaignManagerClient};
-
-fn setup_test() -> (Env, DonationManagerClient<'static>, CampaignManagerClient<'static>, Address, Address) {
+fn setup_dm_only() -> (Env, DonationManagerClient<'static>, Address, Address) {
     let env = Env::default();
     env.mock_all_auths();
-    
-    // Set ledger timestamp to a known value
-    env.ledger().with_mut(|l| l.timestamp = 1000);
+    env.ledger().with_mut(|l| l.timestamp = 1_000_000);
 
-    // Setup Mock Token
+    // Mock token
     let token_admin = Address::generate(&env);
     let token_addr = env.register_stellar_asset_contract(token_admin.clone());
-    let token = StellarAssetClient::new(&env, &token_addr);
 
-    // Register Campaign Manager
-    let cm_id = env.register_contract(None, CampaignManager);
-    let cm_client = CampaignManagerClient::new(&env, &cm_id);
+    // Use a plain generated address as the mock CampaignManager
+    let mock_cm = Address::generate(&env);
 
-    // Register Donation Manager
     let dm_id = env.register_contract(None, DonationManager);
-    let dm_client = DonationManagerClient::new(&env, &dm_id);
+    let dm = DonationManagerClient::new(&env, &dm_id);
+    dm.init(&mock_cm, &token_addr);
 
-    // Init Donation Manager
-    dm_client.init(&cm_id, &token_addr);
-
-    // Since CM normally registers with DM via env.invoke_contract, in test we do it manually or setup CM
-    // Wait, the actual campaign manager doesn't let us set the DM address unless we add an init function.
-    // In campaign-manager/src/lib.rs create_campaign hardcodes "donation_manager" address which is problematic for testing.
-    // To keep it simple, we'll test donation manager functions independently assuming campaign exists.
-    
-    // Setup Campaign manually in CM if possible, but CM uses storage. 
-    // Since we mock auths, we can just call CM directly.
-    // Wait, CM invoke_contract fails if DM address is unknown. 
-    
-    (env, dm_client, cm_client, token_addr, token_admin)
+    (env, dm, token_addr, mock_cm)
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Test: get_campaign_funds returns 0 for unregistered campaign
+// ─────────────────────────────────────────────────────────────────────────────
+
 #[test]
-fn test_create_and_donate() {
-    let (env, dm, cm, token_addr, token_admin) = setup_test();
-    let user = Address::generate(&env);
-    let owner = Address::generate(&env);
+fn test_get_campaign_funds_unregistered_returns_zero() {
+    let (_, dm, _, _) = setup_dm_only();
+    assert_eq!(dm.get_campaign_funds(&999u64), 0i128);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Test: register_campaign (mocked auth) sets funds to 0
+// ─────────────────────────────────────────────────────────────────────────────
+
+#[test]
+fn test_register_campaign_initializes_zero_funds() {
+    let (_, dm, _, _) = setup_dm_only();
+    // mock_all_auths satisfies cm.require_auth() inside register_campaign
+    dm.register_campaign(&42u64).expect("register must succeed under mocked auth");
+    assert_eq!(dm.get_campaign_funds(&42u64), 0i128);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Test: token balance accounting works (basic sanity)
+// ─────────────────────────────────────────────────────────────────────────────
+
+#[test]
+fn test_token_balance_sanity() {
+    let (env, _, token_addr, _) = setup_dm_only();
+    let token_admin = Address::generate(&env);
     let token = StellarAssetClient::new(&env, &token_addr);
-    let token_client = token::Client::new(&env, &token_addr);
+    let user = Address::generate(&env);
 
-    // Mint some tokens to user
-    token.mint(&user, &1000);
-
-    // In a real test we'd simulate the full flow.
-    // Since this is a minimal production test scaffold, we ensure the test compiles and runs.
-    assert_eq!(token_client.balance(&user), 1000);
+    token.mint(&user, &1_000i128);
+    let client = soroban_sdk::token::Client::new(&env, &token_addr);
+    assert_eq!(client.balance(&user), 1_000i128);
 }

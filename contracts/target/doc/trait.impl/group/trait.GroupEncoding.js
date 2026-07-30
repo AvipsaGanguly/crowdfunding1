@@ -1,0 +1,9 @@
+(function() {
+    const implementors = Object.fromEntries([["elliptic_curve",[["impl&lt;P&gt; <a class=\"trait\" href=\"group/trait.GroupEncoding.html\" title=\"trait group::GroupEncoding\">GroupEncoding</a> for <a class=\"struct\" href=\"elliptic_curve/point/struct.NonIdentity.html\" title=\"struct elliptic_curve::point::NonIdentity\">NonIdentity</a>&lt;P&gt;<div class=\"where\">where\n    P: <a class=\"trait\" href=\"subtle/trait.ConditionallySelectable.html\" title=\"trait subtle::ConditionallySelectable\">ConditionallySelectable</a> + <a class=\"trait\" href=\"subtle/trait.ConstantTimeEq.html\" title=\"trait subtle::ConstantTimeEq\">ConstantTimeEq</a> + <a class=\"trait\" href=\"https://doc.rust-lang.org/1.96.0/core/default/trait.Default.html\" title=\"trait core::default::Default\">Default</a> + <a class=\"trait\" href=\"group/trait.GroupEncoding.html\" title=\"trait group::GroupEncoding\">GroupEncoding</a>,</div>",0]]]]);
+    if (window.register_implementors) {
+        window.register_implementors(implementors);
+    } else {
+        window.pending_implementors = implementors;
+    }
+})()
+//{"start":59,"fragment_lengths":[879]}

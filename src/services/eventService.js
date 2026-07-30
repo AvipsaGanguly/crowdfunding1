@@ -10,7 +10,7 @@ const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID;
 export const fetchRecentEvents = async (startLedger) => {
   try {
     const filters = [];
-    if (DONATION_MANAGER_ID && DONATION_MANAGER_ID !== 'CBPLACEHOLDER_DONATION_MANAGER_ADDRESS_THAT_NEEDS_UPDATING') {
+    if (DONATION_MANAGER_ID) {
       filters.push({
         type: "contract",
         contractIds: [DONATION_MANAGER_ID],
@@ -18,7 +18,7 @@ export const fetchRecentEvents = async (startLedger) => {
       });
     }
     
-    if (CAMPAIGN_MANAGER_ID && CAMPAIGN_MANAGER_ID !== 'CBPLACEHOLDER_CAMPAIGN_MANAGER_ADDRESS_THAT_NEEDS_UPDATING') {
+    if (CAMPAIGN_MANAGER_ID) {
       filters.push({
         type: "contract",
         contractIds: [CAMPAIGN_MANAGER_ID],

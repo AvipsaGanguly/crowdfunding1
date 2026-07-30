@@ -1,5 +1,5 @@
-import { Contract, nativeToScVal, scValToNative } from '@stellar/stellar-sdk';
-import { buildTransaction, simulateTransaction } from './contract';
+import { Contract, xdr, nativeToScVal, scValToNative } from '@stellar/stellar-sdk';
+import { server, buildTransaction, simulateTransaction } from './contract';
 
 const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID;
 const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID;
@@ -46,7 +46,29 @@ export const buildWithdrawTx = async (address, campaignId) => {
 };
 
 /**
- * Fetch a single campaign using simulateTransaction (Read-only call)
+ * Fetch campaign funds raised from DonationManager (Read-only call)
+ */
+export const fetchCampaignFunds = async (id, publicKey) => {
+  const source = publicKey || 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
+  try {
+    const tx = await buildTransaction(source, (builder) => {
+      builder.addOperation(
+        dmContract.call("get_campaign_funds", nativeToScVal(id, { type: 'u64' }))
+      );
+    });
+
+    const sim = await simulateTransaction(tx);
+    if (sim.result && sim.result.retval) {
+      return scValToNative(sim.result.retval);
+    }
+  } catch (e) {
+    console.error("Failed to fetch campaign funds:", id, e);
+  }
+  return 0;
+};
+
+/**
+ * Fetch a single campaign metadata and raised funds using simulateTransaction (Read-only call)
  */
 export const fetchCampaign = async (id, publicKey) => {
   const source = publicKey || 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF'; 
@@ -58,9 +80,20 @@ export const fetchCampaign = async (id, publicKey) => {
     });
 
     const sim = await simulateTransaction(tx);
-    if (sim.result && sim.result.retval) {
-      return scValToNative(sim.result.retval);
+    if (!sim.result || !sim.result.retval) {
+      return null;
     }
+
+    const campaign = scValToNative(sim.result.retval);
+    if (!campaign) return null;
+
+    // Fetch raised amount from DonationManager
+    const raised = await fetchCampaignFunds(id, source);
+
+    return {
+      ...campaign,
+      raised: raised !== undefined && raised !== null ? raised : 0,
+    };
   } catch (e) {
     console.error("Failed to fetch campaign:", id, e);
   }
@@ -68,24 +101,17 @@ export const fetchCampaign = async (id, publicKey) => {
 };
 
 /**
- * Fetch all campaign metadata in a single read-only call using get_all_campaigns.
+ * Fetch all available campaigns sequentially along with their raised amounts.
  */
 export const fetchAllCampaigns = async (publicKey) => {
-  const source = publicKey || 'GAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWHF';
-  try {
-    const tx = await buildTransaction(source, (builder) => {
-      builder.addOperation(
-        cmContract.call("get_all_campaigns")
-      );
-    });
-
-    const sim = await simulateTransaction(tx);
-    if (sim.result && sim.result.retval) {
-      const campaigns = scValToNative(sim.result.retval);
-      return Array.isArray(campaigns) ? campaigns : [];
-    }
-  } catch (e) {
-    console.error("Failed to fetch all campaigns via get_all_campaigns:", e);
+  const campaigns = [];
+  let id = 1;
+  while (true) {
+    const camp = await fetchCampaign(id, publicKey);
+    if (!camp) break; // CampaignNotFound or error stops the loop
+    campaigns.push(camp);
+    id++;
+    if (id > 20) break; // Hard limit for safety
   }
-  return [];
+  return campaigns;
 };

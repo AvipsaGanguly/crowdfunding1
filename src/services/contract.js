@@ -34,9 +34,22 @@ export const simulateTransaction = async (tx) => {
 
 /**
  * Submit transaction to network.
+ * Accepts either a Transaction object or a raw XDR string.
  */
 export const submitTransaction = async (signedTx) => {
-  const response = await server.sendTransaction(signedTx);
+  // server.sendTransaction() accepts a Transaction/FeeBumpTransaction object.
+  // If we received a raw XDR string (from the wallet kit), parse it first.
+  let txToSubmit = signedTx;
+  if (typeof signedTx === 'string') {
+    const { Transaction, FeeBumpTransaction, Networks } = await import('@stellar/stellar-sdk');
+    try {
+      txToSubmit = new Transaction(signedTx, NETWORK_PASSPHRASE);
+    } catch {
+      txToSubmit = new FeeBumpTransaction(signedTx, NETWORK_PASSPHRASE);
+    }
+  }
+
+  const response = await server.sendTransaction(txToSubmit);
   if (response.status === 'ERROR') {
     throw new Error(`Submit Failed: ${JSON.stringify(response.errorResult)}`);
   }

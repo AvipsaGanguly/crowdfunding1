@@ -23,34 +23,34 @@ const NotFound = lazy(() => import('./pages/NotFound'));
 
 function App() {
   return (
-    <ToastProvider>
-      <WalletProvider>
-        <EventProvider>
-        <Router>
-          <div className="app-container">
-            <Navbar />
-            <WalletSelectorModal />
-            <LiveFeed />
-            <main>
-              <ErrorBoundary>
-                <Suspense fallback={<div className="loading-container">Loading...</div>}>
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/create-campaign" element={<CreateCampaign />} />
-                    <Route path="/campaign/:id" element={<CampaignDetails />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </Suspense>
-              </ErrorBoundary>
-            </main>
-            <Footer />
-          </div>
-        </Router>
-        </EventProvider>
-      </WalletProvider>
-    </ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
+        <WalletProvider>
+          <EventProvider>
+            <Router>
+              <div className="app-container">
+                <Navbar />
+                <WalletSelectorModal />
+                <LiveFeed />
+                <main>
+                  <Suspense fallback={<div className="loading-container">Loading...</div>}>
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/create-campaign" element={<CreateCampaign />} />
+                      <Route path="/campaign/:id" element={<CampaignDetails />} />
+                      <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="*" element={<NotFound />} />
+                    </Routes>
+                  </Suspense>
+                </main>
+                <Footer />
+              </div>
+            </Router>
+          </EventProvider>
+        </WalletProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   );
 }
 

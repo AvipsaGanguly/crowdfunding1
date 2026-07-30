@@ -1,8 +1,17 @@
 /**
  * @file src/services/wallet.js
- * @description Wallet service for Stellar Journey Crowdfunding (Level 3 Master).
- * Manages Stellar wallet connections (Freighter, xBull, Albedo, Lobstr, Rabet) using @creit.tech/stellar-wallets-kit,
- * providing connection persistence, automatic session restoration, transaction signing, and descriptive error handling.
+ * @description Wallet service for Stellar Journey Crowdfunding.
+ * Manages Stellar wallet connections using @creit.tech/stellar-wallets-kit v2.5.
+ *
+ * KEY DESIGN DECISIONS:
+ * - App ALWAYS starts in a disconnected state on page load.
+ * - NO localStorage or sessionStorage persistence for wallet state.
+ * - NO automatic reconnect calls on startup.
+ * - Every manual "Connect Wallet" action prompts module selection or open authModal.
+ * - Selected wallet module executes getAddress({ skipRequestAccess: false }) to
+ *   trigger the wallet extension's authorization popup.
+ * - disconnectWallet() resets in-memory session state completely.
+ * - switchWallet() clears existing session and triggers fresh wallet selection.
  */
 
 import { StellarWalletsKit, Networks } from '@creit.tech/stellar-wallets-kit';
@@ -12,11 +21,7 @@ import { AlbedoModule } from '@creit.tech/stellar-wallets-kit/modules/albedo';
 import { LobstrModule } from '@creit.tech/stellar-wallets-kit/modules/lobstr';
 import { RabetModule } from '@creit.tech/stellar-wallets-kit/modules/rabet';
 
-// LocalStorage Keys for persistence
-const STORAGE_KEY_WALLET_ID = 'stellar_connected_wallet_id';
-const STORAGE_KEY_ADDRESS = 'stellar_connected_wallet_address';
-
-// Supported wallet identifiers
+// ─── Supported wallet identifiers ────────────────────────────────────────────
 export const SUPPORTED_WALLETS = {
   FREIGHTER: 'freighter',
   XBULL: 'xbull',
@@ -25,22 +30,15 @@ export const SUPPORTED_WALLETS = {
   RABET: 'rabet',
 };
 
-// Singleton instance of StellarWalletsKit
-let kitInstance = null;
-
-// In-memory active session state
+// ─── In-memory session state (NEVER persisted to storage) ────────────────────
 let activeWalletId = null;
 let activeAddress = null;
+let kitInitialized = false;
 
-/**
- * Lazy initialization of the StellarWalletsKit instance.
- * Equips support for Freighter, xBull, Albedo, Lobstr, and Rabet.
- * 
- * @returns {StellarWalletsKit} Configured StellarWalletsKit instance
- */
-function getKitInstance() {
-  if (!kitInstance) {
-    kitInstance = new StellarWalletsKit({
+// ─── Kit singleton initialization ───────────────────────────────────────────
+export function initKit() {
+  if (!kitInitialized) {
+    StellarWalletsKit.init({
       network: Networks.TESTNET,
       selectedWalletId: SUPPORTED_WALLETS.FREIGHTER,
       modules: [
@@ -51,159 +49,131 @@ function getKitInstance() {
         new RabetModule(),
       ],
     });
+    kitInitialized = true;
   }
-  return kitInstance;
 }
 
-/**
- * Checks if a given wallet identifier is supported by the kit.
- * 
- * @param {string} walletId - The ID of the wallet to check
- * @returns {boolean} True if supported
- */
 function isSupportedWallet(walletId) {
   if (!walletId) return false;
   return Object.values(SUPPORTED_WALLETS).includes(walletId.toLowerCase());
 }
 
 /**
- * Automatically restores a previously saved wallet session from localStorage.
- * 
- * @returns {Object|null} Active session details or null if no saved session
+ * Connects to a Stellar wallet.
+ *
+ * If walletId is NOT provided, invokes StellarWalletsKit.authModal() to show
+ * the kit's official selection modal.
+ * If walletId IS provided, sets the wallet module and calls getAddress({ skipRequestAccess: false })
+ * to trigger the wallet extension authorization popup.
+ *
+ * @param {string|null} [walletId=null] - Target wallet ID or null to open kit modal
+ * @returns {Promise<{walletId: string, address: string, isConnected: boolean}>} Connected session payload
  */
-export function restoreWallet() {
-  try {
-    const savedWalletId = typeof window !== 'undefined' && window.localStorage
-      ? localStorage.getItem(STORAGE_KEY_WALLET_ID)
-      : null;
-    const savedAddress = typeof window !== 'undefined' && window.localStorage
-      ? localStorage.getItem(STORAGE_KEY_ADDRESS)
-      : null;
+export async function connectWallet(walletId = null) {
+  initKit();
 
-    if (savedWalletId && savedAddress && isSupportedWallet(savedWalletId)) {
-      activeWalletId = savedWalletId;
-      activeAddress = savedAddress;
-      getKitInstance().setWallet(savedWalletId);
-      return {
-        walletId: activeWalletId,
-        address: activeAddress,
-        isConnected: true,
-      };
+  // If no explicit walletId was passed, open official StellarWalletsKit.authModal()
+  if (!walletId) {
+    try {
+      const modalRes = await StellarWalletsKit.authModal();
+      const selectedId = StellarWalletsKit.selectedModule?.productId || SUPPORTED_WALLETS.FREIGHTER;
+
+      if (!modalRes?.address || typeof modalRes.address !== 'string') {
+        throw new Error('No public key address received from wallet authentication.');
+      }
+
+      activeWalletId = selectedId.toLowerCase();
+      activeAddress = modalRes.address;
+
+      return { walletId: activeWalletId, address: activeAddress, isConnected: true };
+    } catch (error) {
+      const msg = error?.message || String(error);
+      if (msg.toLowerCase().includes('closed') || msg.toLowerCase().includes('cancel') || msg.toLowerCase().includes('dismiss')) {
+        throw new Error('Wallet connection modal was closed by user.');
+      }
+      throw new Error(`Wallet authentication failed: ${msg}`);
     }
-  } catch (error) {
-    console.warn('Failed to restore wallet session from localStorage:', error);
   }
-  return null;
-}
 
-/**
- * Connects to the specified Stellar wallet.
- * Supports Freighter, xBull, and other kit-supported wallets.
- * Handles missing extension, user rejections, and unsupported wallet errors.
- * 
- * @param {string} [walletId='freighter'] - Wallet identifier to connect to
- * @returns {Promise<{walletId: string, address: string, isConnected: boolean}>} Connected wallet details
- * @throws {Error} Descriptive error on connection failure
- */
-export async function connectWallet(walletId = SUPPORTED_WALLETS.FREIGHTER) {
-  const normalizedWalletId = walletId ? walletId.toLowerCase() : SUPPORTED_WALLETS.FREIGHTER;
+  // Explicit wallet selection flow
+  const normalizedId = walletId.toLowerCase();
 
-  // Validate wallet support
-  if (!isSupportedWallet(normalizedWalletId)) {
+  if (!isSupportedWallet(normalizedId)) {
     throw new Error(
-      `Unsupported wallet '${walletId}'. Supported wallets are: ${Object.values(SUPPORTED_WALLETS).join(', ')}.`
+      `Unsupported wallet "${walletId}". Supported: ${Object.values(SUPPORTED_WALLETS).join(', ')}.`
     );
   }
 
-  const kit = getKitInstance();
+  // Select module in the kit
+  StellarWalletsKit.setWallet(normalizedId);
 
   try {
-    // Set active module in StellarWalletsKit
-    kit.setWallet(normalizedWalletId);
-
-    // Request account address from wallet
-    const result = await kit.getAddress();
-    const address = result?.address || result;
+    // Calling getAddress({ skipRequestAccess: false }) forces requestAccess() to run first,
+    // prompting the extension authorization popup.
+    const { address } = await StellarWalletsKit.selectedModule.getAddress({ skipRequestAccess: false });
 
     if (!address || typeof address !== 'string') {
-      throw new Error(`Failed to retrieve a valid public address from ${normalizedWalletId}.`);
+      throw new Error(`No valid public key address returned from ${normalizedId}.`);
     }
 
-    // Persist active session
-    activeWalletId = normalizedWalletId;
+    activeWalletId = normalizedId;
     activeAddress = address;
 
-    if (typeof window !== 'undefined' && window.localStorage) {
-      localStorage.setItem(STORAGE_KEY_WALLET_ID, normalizedWalletId);
-      localStorage.setItem(STORAGE_KEY_ADDRESS, address);
-    }
+    return { walletId: activeWalletId, address: activeAddress, isConnected: true };
 
-    return {
-      walletId: activeWalletId,
-      address: activeAddress,
-      isConnected: true,
-    };
   } catch (error) {
-    // Standardize & handle specific error scenarios with descriptive messages
-    const errorMsg = error?.message || String(error);
-    const lowerMsg = errorMsg.toLowerCase();
+    const msg = error?.message || String(error);
+    const lower = msg.toLowerCase();
 
     if (
-      lowerMsg.includes('not installed') ||
-      lowerMsg.includes('not found') ||
-      lowerMsg.includes('missing') ||
-      lowerMsg.includes('is not available')
+      lower.includes('not installed') ||
+      lower.includes('not found') ||
+      lower.includes('not available') ||
+      lower.includes('missing')
     ) {
       throw new Error(
-        `The ${normalizedWalletId} wallet extension is not installed or unavailable in your browser.`
+        `The ${normalizedId} wallet extension is not installed or unavailable in your browser.`
       );
     }
 
     if (
-      lowerMsg.includes('reject') ||
-      lowerMsg.includes('user denied') ||
-      lowerMsg.includes('cancelled') ||
-      lowerMsg.includes('canceled') ||
-      lowerMsg.includes('declined')
+      lower.includes('reject') ||
+      lower.includes('user denied') ||
+      lower.includes('cancel') ||
+      lower.includes('declined')
     ) {
-      throw new Error(`Wallet connection request was rejected by the user.`);
+      throw new Error('Connection request was rejected by the user in wallet popup.');
     }
 
-    throw new Error(`Failed to connect to ${normalizedWalletId} wallet: ${errorMsg}`);
+    throw new Error(`Failed to connect ${normalizedId}: ${msg}`);
   }
 }
 
 /**
- * Disconnects the currently active Stellar wallet and purges localStorage persistence.
- * 
- * @returns {boolean} True if successfully disconnected
+ * Disconnects the wallet — completely resets in-memory application session state.
  */
 export function disconnectWallet() {
   activeWalletId = null;
   activeAddress = null;
-
-  if (typeof window !== 'undefined' && window.localStorage) {
-    localStorage.removeItem(STORAGE_KEY_WALLET_ID);
-    localStorage.removeItem(STORAGE_KEY_ADDRESS);
-  }
-
   return true;
 }
 
 /**
- * Checks if a wallet is currently connected.
- * 
- * @returns {boolean} True if connected
+ * Switches wallet — disconnects current session and connects to new wallet.
+ *
+ * @param {string|null} [newWalletId=null] - Target wallet ID or null to open selection modal
  */
+export async function switchWallet(newWalletId = null) {
+  disconnectWallet();
+  return await connectWallet(newWalletId);
+}
+
+/** Returns true if an active in-memory session exists. */
 export function isWalletConnected() {
   return Boolean(activeWalletId && activeAddress);
 }
 
-/**
- * Retrieves information about the currently active wallet session.
- * 
- * @returns {{walletId: string|null, address: string|null, isConnected: boolean}} Active wallet session
- */
+/** Returns current in-memory session state details. */
 export function getActiveWallet() {
   return {
     walletId: activeWalletId,
@@ -213,50 +183,43 @@ export function getActiveWallet() {
 }
 
 /**
- * Signs a Stellar transaction envelope XDR using the active wallet.
- * Handles user rejections and missing connection state.
- * 
- * @param {string} xdr - Unsigned Stellar transaction envelope XDR string
- * @param {Object} [opts={}] - Optional parameters for transaction signing
- * @returns {Promise<any>} Signed transaction result from wallet kit
- * @throws {Error} Descriptive error if disconnected or signing fails
+ * Signs a transaction XDR with the currently active wallet.
+ *
+ * @param {string} xdr - Unsigned transaction XDR string
+ * @param {Object} [opts={}] - Optional signing parameters
+ * @returns {Promise<{signedTxXdr: string, signerAddress: string}>} Signed transaction result
  */
 export async function signTransaction(xdr, opts = {}) {
   if (!isWalletConnected()) {
-    throw new Error('Wallet is disconnected. Please connect a wallet before signing transactions.');
+    throw new Error('No wallet connected. Please connect a wallet first.');
   }
-
   if (!xdr || typeof xdr !== 'string') {
-    throw new Error('Invalid XDR parameter provided for signing.');
+    throw new Error('Invalid XDR string provided for signing.');
   }
 
-  const kit = getKitInstance();
+  initKit();
 
   try {
-    const signedResult = await kit.signTransaction(xdr, opts);
-    return signedResult;
+    const result = await StellarWalletsKit.signTransaction(xdr, opts);
+    return result;
   } catch (error) {
-    const errorMsg = error?.message || String(error);
-    const lowerMsg = errorMsg.toLowerCase();
+    const msg = error?.message || String(error);
+    const lower = msg.toLowerCase();
 
     if (
-      lowerMsg.includes('reject') ||
-      lowerMsg.includes('user denied') ||
-      lowerMsg.includes('declined') ||
-      lowerMsg.includes('cancelled') ||
-      lowerMsg.includes('canceled')
+      lower.includes('reject') ||
+      lower.includes('user denied') ||
+      lower.includes('cancel') ||
+      lower.includes('declined')
     ) {
-      throw new Error('Transaction signing request was rejected by the user.');
+      throw new Error('Transaction signing was rejected by the user in wallet.');
     }
 
-    if (lowerMsg.includes('disconnected') || lowerMsg.includes('session expired')) {
+    if (lower.includes('disconnected') || lower.includes('session expired')) {
       disconnectWallet();
-      throw new Error('Wallet connection session expired or disconnected.');
+      throw new Error('Wallet session expired. Please reconnect.');
     }
 
-    throw new Error(`Failed to sign transaction: ${errorMsg}`);
+    throw new Error(`Signing failed: ${msg}`);
   }
 }
-
-// Automatically attempt to restore wallet session on module import
-restoreWallet();

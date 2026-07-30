@@ -4,14 +4,10 @@ import StatsCard from '../components/StatsCard';
 import CampaignCard from '../components/CampaignCard';
 import { fetchAllCampaigns } from '../services/campaign';
 import { LoadingSkeleton } from '../components/LoadingSpinner';
-import { useEvents } from '../hooks/useEvents';
-import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const Home = () => {
-  useDocumentTitle('Home');
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
-  const { events } = useEvents();
 
   useEffect(() => {
     const loadData = async () => {
@@ -27,18 +23,6 @@ const Home = () => {
     };
     loadData();
   }, []);
-
-  // Auto-refresh logic via events
-  useEffect(() => {
-    if (events.length > 0) {
-      const latest = events[0];
-      if (latest.type === 'CampaignCreated' && !campaigns.find(c => c.id.toString() === latest.data.campaignId?.toString())) {
-        // In a real app we would fetch the specific campaign ID here and prepend it.
-        // For now, we trigger a soft reload to keep data consistent.
-        fetchAllCampaigns().then(data => setCampaigns(data || []));
-      }
-    }
-  }, [events]);
 
   return (
     <div className="animate-fade-in">
@@ -61,17 +45,28 @@ const Home = () => {
         ) : campaigns.length === 0 ? (
           <p style={{padding: '0 5%', color: 'var(--text-muted)'}}>No campaigns found yet.</p>
         ) : (
-          campaigns.map(c => (
-            <CampaignCard 
-              key={c.id.toString()} 
-              id={c.id.toString()}
-              title={c.title.toString()} 
-              desc={c.description.toString()} 
-              raised={0} // To be fetched from DonationManager or derived
-              goal={Number(c.goal) / 10000000} 
-              daysLeft={Math.max(0, Math.floor((Number(c.deadline) - Date.now()/1000) / 86400))} 
-            />
-          ))
+          campaigns.map((c, idx) => {
+            const id = c.id !== undefined && c.id !== null ? String(c.id) : String(idx + 1);
+            const title = c.title ? String(c.title) : 'Untitled Campaign';
+            const desc = c.description ? String(c.description) : 'No description provided.';
+            const goal = c.goal !== undefined && c.goal !== null ? Number(c.goal) / 10000000 : 1000;
+            const deadline = c.deadline ? Number(c.deadline) : Date.now() / 1000 + 30 * 86400;
+            const daysLeft = Math.max(0, Math.floor((deadline - Date.now() / 1000) / 86400));
+            const raisedStroops = c.raised !== undefined && c.raised !== null ? Number(c.raised) : 0;
+            const raised = raisedStroops / 10000000;
+
+            return (
+              <CampaignCard 
+                key={id} 
+                id={id}
+                title={title} 
+                desc={desc} 
+                raised={raised} 
+                goal={goal} 
+                daysLeft={daysLeft} 
+              />
+            );
+          })
         )}
       </div>
     </div>
