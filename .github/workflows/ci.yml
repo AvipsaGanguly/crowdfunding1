@@ -22,7 +22,7 @@ jobs:
         cache: 'npm'
 
     - name: Setup Rust
-      uses: dtolnay/rust-toolchain@stable
+      uses: dtolnay/rust-toolchain@1.96.0
       with:
         targets: wasm32-unknown-unknown
 
