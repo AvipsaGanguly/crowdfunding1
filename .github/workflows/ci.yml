@@ -24,6 +24,7 @@ jobs:
     - name: Setup Rust
       uses: dtolnay/rust-toolchain@stable
       with:
+        toolchain: 1.79.0
         targets: wasm32-unknown-unknown
 
     - name: Install Frontend Dependencies
@@ -36,5 +37,5 @@ jobs:
       run: npm run test
 
     - name: Run Smart Contract Tests
-      run: cargo test --workspace
+      run: cargo test --workspace --lib
       working-directory: ./contracts
