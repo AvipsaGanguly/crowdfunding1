@@ -1,4 +1,4 @@
-use soroban_sdk::{Address, Env, symbol_short};
+use soroban_sdk::{symbol_short, Address, Env};
 
 pub fn donation_received(env: &Env, campaign_id: u64, donor: Address, amount: i128) {
     let topics = (symbol_short!("donated"), campaign_id, donor);

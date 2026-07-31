@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, String, Vec, IntoVal};
+use soroban_sdk::{contract, contractimpl, symbol_short, Address, Env, IntoVal, String, Vec};
 
 mod types;
 use types::{CampaignMetadata, DataKey, Error};
@@ -14,7 +14,9 @@ pub struct CampaignManager;
 impl CampaignManager {
     /// Initialize with the donation manager address (which handles the funds)
     pub fn init(env: Env, donation_manager: Address) {
-        env.storage().instance().set(&DataKey::DonationManager, &donation_manager);
+        env.storage()
+            .instance()
+            .set(&DataKey::DonationManager, &donation_manager);
     }
 
     /// Create a new campaign and notify the donation manager
@@ -31,18 +33,14 @@ impl CampaignManager {
 
         // ── DIAGNOSTIC: emit inputs so simulation can be inspected ──────────
         let current_time = env.ledger().timestamp();
-        env.events().publish(
-            (symbol_short!("diag"), symbol_short!("goal")),
-            goal,
-        );
+        env.events()
+            .publish((symbol_short!("diag"), symbol_short!("goal")), goal);
         env.events().publish(
             (symbol_short!("diag"), symbol_short!("cur_time")),
             current_time,
         );
-        env.events().publish(
-            (symbol_short!("diag"), symbol_short!("deadline")),
-            deadline,
-        );
+        env.events()
+            .publish((symbol_short!("diag"), symbol_short!("deadline")), deadline);
         // ── END DIAGNOSTIC ───────────────────────────────────────────────────
 
         if goal <= 0 {
@@ -61,7 +59,11 @@ impl CampaignManager {
             return Err(Error::InvalidInput); // Deadline in past
         }
 
-        let mut count: u64 = env.storage().instance().get(&DataKey::CampaignCount).unwrap_or(0);
+        let mut count: u64 = env
+            .storage()
+            .instance()
+            .get(&DataKey::CampaignCount)
+            .unwrap_or(0);
         count += 1;
 
         let campaign = CampaignMetadata {
@@ -76,8 +78,12 @@ impl CampaignManager {
         };
 
         // Save metadata and update campaign count
-        env.storage().persistent().set(&DataKey::Campaign(count), &campaign);
-        env.storage().instance().set(&DataKey::CampaignCount, &count);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Campaign(count), &campaign);
+        env.storage()
+            .instance()
+            .set(&DataKey::CampaignCount, &count);
 
         // Maintain persistent vector of campaign IDs
         let mut campaign_ids: Vec<u64> = env
@@ -86,7 +92,9 @@ impl CampaignManager {
             .get(&DataKey::CampaignIds)
             .unwrap_or_else(|| Vec::new(&env));
         campaign_ids.push_back(count);
-        env.storage().persistent().set(&DataKey::CampaignIds, &campaign_ids);
+        env.storage()
+            .persistent()
+            .set(&DataKey::CampaignIds, &campaign_ids);
 
         // Notify Donation Manager
         let donation_manager: Address = env
@@ -118,7 +126,7 @@ impl CampaignManager {
         env.invoke_contract::<()>(
             &donation_manager,
             &soroban_sdk::Symbol::new(&env, "register_campaign"),
-            soroban_sdk::vec![&env, count.into_val(&env)]
+            soroban_sdk::vec![&env, count.into_val(&env)],
         );
 
         Ok(count)
@@ -133,7 +141,9 @@ impl CampaignManager {
 
         campaign.owner.require_auth();
         campaign.active = false;
-        env.storage().persistent().set(&DataKey::Campaign(campaign_id), &campaign);
+        env.storage()
+            .persistent()
+            .set(&DataKey::Campaign(campaign_id), &campaign);
         Ok(())
     }
 

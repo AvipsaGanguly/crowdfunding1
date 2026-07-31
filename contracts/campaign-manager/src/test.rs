@@ -44,8 +44,8 @@ fn test_create_campaign_invokes_register_campaign() {
         &owner,
         &soroban_sdk::String::from_str(&f.env, "Save the Rainforest"),
         &soroban_sdk::String::from_str(&f.env, "Plant 1M trees"),
-        &500_000_000i128,   // goal: 50 XLM in stroops
-        &2_000_000u64,      // deadline > 1_000_000
+        &500_000_000i128, // goal: 50 XLM in stroops
+        &2_000_000u64,    // deadline > 1_000_000
         &soroban_sdk::String::from_str(&f.env, "Environment"),
     );
 
@@ -55,10 +55,10 @@ fn test_create_campaign_invokes_register_campaign() {
     assert_eq!(funds, 0i128, "Newly registered campaign must have 0 raised");
 
     let meta = f.cm.get_campaign(&campaign_id);
-    assert_eq!(meta.id,       1u64);
-    assert_eq!(meta.goal,     500_000_000i128);
+    assert_eq!(meta.id, 1u64);
+    assert_eq!(meta.goal, 500_000_000i128);
     assert_eq!(meta.deadline, 2_000_000u64);
-    assert!(meta.active,      "Campaign must be active after creation");
+    assert!(meta.active, "Campaign must be active after creation");
 }
 
 #[test]
@@ -99,7 +99,11 @@ fn test_multiple_campaigns_registered() {
     }
 
     let all = f.cm.get_all_campaigns();
-    assert_eq!(all.len(), 3u32, "get_all_campaigns must return all 3 campaigns");
+    assert_eq!(
+        all.len(),
+        3u32,
+        "get_all_campaigns must return all 3 campaigns"
+    );
 }
 
 #[test]
@@ -116,7 +120,10 @@ fn test_create_campaign_rejects_past_deadline() {
         &soroban_sdk::String::from_str(&f.env, "Art"),
     );
 
-    assert!(result.is_err(), "Past deadline must be rejected with InvalidInput");
+    assert!(
+        result.is_err(),
+        "Past deadline must be rejected with InvalidInput"
+    );
 }
 
 #[test]
@@ -133,5 +140,8 @@ fn test_create_campaign_rejects_zero_goal() {
         &soroban_sdk::String::from_str(&f.env, "Finance"),
     );
 
-    assert!(result.is_err(), "Zero goal must be rejected with InvalidInput");
+    assert!(
+        result.is_err(),
+        "Zero goal must be rejected with InvalidInput"
+    );
 }
