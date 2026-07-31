@@ -36,5 +36,5 @@ jobs:
       run: npm run test
 
     - name: Run Smart Contract Tests
-      run: cargo test -p campaign-manager -p donation-manager
+      run: cargo test --workspace --lib
       working-directory: ./contracts
