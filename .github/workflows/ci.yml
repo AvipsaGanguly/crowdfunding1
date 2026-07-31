@@ -27,7 +27,7 @@ jobs:
         targets: wasm32-unknown-unknown
 
     - name: Install Frontend Dependencies
-      run: npm ci
+      run: npm install --ignore-scripts
 
     - name: Build Frontend
       run: npm run build
