@@ -233,11 +233,13 @@ npm run build
 
 ---
 
-## 🖼️ Screenshots Section
+## 🖼️ Screenshots
 
-| Home Page & Campaign Grid | Campaign Details & Transaction Modal |
-| :---: | :---: |
-| *(Add your screenshot here)* | *(Add your screenshot here)* |
+**Homepage**
+![Homepage](./screenshots/homepage.png)
+
+**Dashboard - Trending Campaigns**
+![Dashboard](./screenshots/dashboard.png)
 
 ---
 
