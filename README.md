@@ -8,6 +8,13 @@ A next-generation, production-ready decentralized crowdfunding platform built na
 
 ---
 
+## 🎥 Demo Video
+
+Watch the full demo walkthrough of the application here:
+[Watch Demo Video](https://drive.google.com/file/d/1IKXIlBIyGUvLcy8yq3jmJM8di9v28BDt/view?usp=sharing)
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
