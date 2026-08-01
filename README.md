@@ -235,11 +235,10 @@ npm run build
 
 ## 🖼️ Screenshots
 
-**Homepage**
-![Homepage](./screenshots/homepage.png)
 
-**Dashboard - Trending Campaigns**
-![Dashboard](./screenshots/dashboard.png)
+![](image.png)
+
+![alt text](image-1.png)
 
 ---
 
