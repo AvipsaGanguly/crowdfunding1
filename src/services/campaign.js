@@ -1,8 +1,8 @@
 import { Contract, xdr, nativeToScVal, scValToNative } from '@stellar/stellar-sdk';
 import { server, buildTransaction, simulateTransaction } from './contract';
 
-const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID;
-const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID;
+const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID || 'CAPFOLYX5LZRFZZUPV374HOEXGLIA7QN3SR5SHA5V75W6PBZBK4KM52V';
+const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID || 'CAYUM76UIQMEQLE4JBMV2BJWWALTX3T5SGTKV75XBGCE2GQHN3A6YJKR';
 
 const cmContract = new Contract(CAMPAIGN_MANAGER_ID);
 const dmContract = new Contract(DONATION_MANAGER_ID);

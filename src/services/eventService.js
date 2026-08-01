@@ -1,8 +1,8 @@
 import { server } from './contract';
 import { scValToNative } from '@stellar/stellar-sdk';
 
-const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID;
-const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID;
+const DONATION_MANAGER_ID = import.meta.env.VITE_DONATION_MANAGER_ID || 'CAYUM76UIQMEQLE4JBMV2BJWWALTX3T5SGTKV75XBGCE2GQHN3A6YJKR';
+const CAMPAIGN_MANAGER_ID = import.meta.env.VITE_CAMPAIGN_MANAGER_ID || 'CAPFOLYX5LZRFZZUPV374HOEXGLIA7QN3SR5SHA5V75W6PBZBK4KM52V';
 
 /**
  * Poll the Soroban RPC for new events since a specific ledger.

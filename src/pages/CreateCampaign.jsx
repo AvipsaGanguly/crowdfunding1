@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTransaction } from '../hooks/useTransaction';
 import { buildCreateCampaignTx } from '../services/campaign';
 
 const CreateCampaign = () => {
+  const navigate = useNavigate();
   const { execute, isPending } = useTransaction();
   const [form, setForm] = useState({
     title: '',
@@ -42,7 +44,7 @@ const CreateCampaign = () => {
       return;
     }
 
-    await execute(
+    const success = await execute(
       (address) => buildCreateCampaignTx(address, {
         title: form.title,
         description: form.description || '',
@@ -52,6 +54,12 @@ const CreateCampaign = () => {
       }),
       'Campaign created successfully!'
     );
+
+    if (success) {
+      setTimeout(() => {
+        navigate('/dashboard');
+      }, 1500);
+    }
   };
 
   const tomorrowStr = (() => {

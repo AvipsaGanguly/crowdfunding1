@@ -1,7 +1,7 @@
 import { rpc, TransactionBuilder, Networks, Account, xdr } from '@stellar/stellar-sdk';
 
-const RPC_URL = import.meta.env.VITE_RPC_URL;
-const NETWORK_PASSPHRASE = import.meta.env.VITE_NETWORK_PASSPHRASE;
+const RPC_URL = import.meta.env.VITE_RPC_URL || 'https://soroban-testnet.stellar.org';
+const NETWORK_PASSPHRASE = import.meta.env.VITE_NETWORK_PASSPHRASE || 'Test SDF Network ; September 2015';
 
 export const server = new rpc.Server(RPC_URL);
 
