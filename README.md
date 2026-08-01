@@ -238,8 +238,9 @@ npm run build
 
 ![](image.png)
 
-![alt text](image-1.png)
+![CI/CD pipeline running and Test output with 3+ passing tests](image-2.png)
 
+![Mobile responsive UI](image-3.png)
 ---
 
 ## 🔮 Future Improvements
