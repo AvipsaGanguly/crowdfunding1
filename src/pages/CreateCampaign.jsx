@@ -21,6 +21,13 @@ const CreateCampaign = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // ── Validate title ───────────────────────────────────────────────────────
+    const trimmedTitle = form.title.trim();
+    if (trimmedTitle.length < 3 || trimmedTitle.length > 100) {
+      alert('Campaign title must be between 3 and 100 characters.');
+      return;
+    }
+
     // ── Parse goal ───────────────────────────────────────────────────────────
     const goalXLM = Number(form.goal);
     if (!goalXLM || goalXLM <= 0) {
@@ -46,7 +53,7 @@ const CreateCampaign = () => {
 
     const success = await execute(
       (address) => buildCreateCampaignTx(address, {
-        title: form.title,
+        title: trimmedTitle,
         description: form.description || '',
         goal: goalStroops,
         deadline: deadlineTimestamp,
