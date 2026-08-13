@@ -21,10 +21,16 @@ const CreateCampaign = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // ── Validate title ───────────────────────────────────────────────────────
+    // ── Validate title & description ──────────────────────────────────────────
     const trimmedTitle = form.title.trim();
     if (trimmedTitle.length < 3 || trimmedTitle.length > 100) {
       alert('Campaign title must be between 3 and 100 characters.');
+      return;
+    }
+
+    const trimmedDescription = (form.description || '').trim();
+    if (trimmedDescription.length > 500) {
+      alert('Description cannot exceed 500 characters.');
       return;
     }
 
