@@ -295,7 +295,7 @@ npm run build
 - [x] **Event Streaming & Real-Time RPC Updates**: Polling event engine for ledger-level donation event decoding.
 - [x] **Multi-Wallet Integration**: Support for Freighter, xBull, Albedo, Lobstr, and Rabet via `@creit.tech/stellar-wallets-kit`.
 - [x] **CI/CD Pipeline**: GitHub Actions workflow testing Node 20 & Rust WASM targets on every push.
-- [x] **Automated Test Suite**: 34 Vitest frontend tests + 10 Soroban Rust contract tests.
+- [x] **Automated Test Suite**: 46 Vitest frontend tests (across 16 test suites) + 12 Soroban Rust contract tests (across 2 crates).
 - [x] **Live Vercel Deployment**: Configured with SPA route rewrites and live SSL endpoints.
 
 ---
