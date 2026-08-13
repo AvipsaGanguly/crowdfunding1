@@ -3,6 +3,15 @@ import { useWallet } from '../hooks/useWallet';
 
 const WalletButton = () => {
   const { address, isConnecting, disconnect, switchWallet, setIsModalOpen } = useWallet();
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopyAddress = () => {
+    if (address) {
+      navigator.clipboard.writeText(address);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   if (isConnecting) {
     return (
@@ -17,19 +26,20 @@ const WalletButton = () => {
 
     return (
       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-        <span
+        <button
+          type="button"
+          onClick={handleCopyAddress}
+          className="btn btn-outline"
+          title="Click to copy full wallet address"
           style={{
-            padding: '0.5rem 1rem',
-            background: 'rgba(255, 255, 255, 0.05)',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--glass-border)',
             fontFamily: 'monospace',
-            fontSize: '0.9rem',
+            fontSize: '0.85rem',
+            padding: '0.5rem 0.8rem',
+            cursor: 'pointer',
           }}
-          title="Connected Wallet Address"
         >
-          {truncated}
-        </span>
+          {copied ? 'Copied!' : truncated}
+        </button>
         <button
           className="btn btn-primary"
           onClick={() => switchWallet()}
