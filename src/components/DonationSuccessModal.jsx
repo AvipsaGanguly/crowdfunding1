@@ -14,6 +14,16 @@ const DonationSuccessModal = ({ donation, onClose }) => {
     explorerUrl,
   } = donation;
 
+  const [copied, setCopied] = React.useState(false);
+
+  const handleCopy = () => {
+    if (hash) {
+      navigator.clipboard.writeText(hash);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
+
   const truncatedHash = hash ? `${hash.slice(0, 8)}...${hash.slice(-8)}` : 'N/A';
   const truncatedAddress = donorAddress ? `${donorAddress.slice(0, 6)}...${donorAddress.slice(-6)}` : 'N/A';
   const finalExplorerUrl = explorerUrl || `https://stellar.expert/explorer/testnet/tx/${hash}`;
@@ -59,58 +69,46 @@ const DonationSuccessModal = ({ donation, onClose }) => {
             position: 'absolute',
             top: '1.25rem',
             right: '1.25rem',
-            background: 'rgba(255, 255, 255, 0.08)',
+            background: 'rgba(255, 255, 255, 0.1)',
             border: 'none',
-            color: 'var(--text-muted, #94a3b8)',
-            fontSize: '1.2rem',
-            width: '36px',
-            height: '36px',
+            color: '#94a3b8',
+            width: '32px',
+            height: '32px',
             borderRadius: '50%',
             cursor: 'pointer',
+            fontSize: '1rem',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             transition: 'all 0.2s ease',
           }}
-          title="Close modal"
         >
-          &times;
+          ✕
         </button>
 
-        {/* Header Icon */}
-        <div style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+        {/* Success Header & Icon */}
+        <div style={{ textAlign: 'center', marginBottom: '1.75rem' }}>
           <div
             style={{
-              width: '72px',
-              height: '72px',
+              width: '64px',
+              height: '64px',
               borderRadius: '50%',
-              background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.4) 100%)',
-              border: '2px solid #10b981',
-              display: 'inline-flex',
+              background: 'radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.05) 70%)',
+              border: '2px solid rgba(16, 185, 129, 0.5)',
+              display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              fontSize: '2.5rem',
-              color: '#10b981',
-              boxShadow: '0 0 25px rgba(16, 185, 129, 0.4)',
-              marginBottom: '1rem',
+              margin: '0 auto 1rem auto',
+              boxShadow: '0 0 20px rgba(16, 185, 129, 0.3)',
             }}
           >
-            ✓
+            <span style={{ fontSize: '1.8rem', color: '#10b981' }}>✓</span>
           </div>
-          <h2
-            style={{
-              fontSize: '1.75rem',
-              fontWeight: 700,
-              margin: '0 0 0.5rem 0',
-              background: 'linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Donation Successful!
-          </h2>
-          <p style={{ margin: 0, color: '#94a3b8', fontSize: '0.95rem' }}>
-            Thank you for supporting this campaign on the Stellar network.
+          <h3 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700, color: '#f8fafc' }}>
+            Donation Confirmed!
+          </h3>
+          <p style={{ margin: '0.4rem 0 0 0', color: '#94a3b8', fontSize: '0.9rem' }}>
+            Thank you for supporting this project on Stellar Testnet.
           </p>
         </div>
 
@@ -208,9 +206,29 @@ const DonationSuccessModal = ({ donation, onClose }) => {
           {/* Hash */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ color: '#94a3b8' }}>Transaction Hash</span>
-            <span style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '0.85rem' }} title={hash}>
-              {truncatedHash}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{ fontFamily: 'monospace', color: '#38bdf8', fontSize: '0.85rem' }} title={hash}>
+                {truncatedHash}
+              </span>
+              {hash && (
+                <button
+                  type="button"
+                  onClick={handleCopy}
+                  title="Copy full transaction hash"
+                  style={{
+                    background: 'rgba(255, 255, 255, 0.1)',
+                    border: 'none',
+                    color: copied ? '#34d399' : '#cbd5e1',
+                    borderRadius: '6px',
+                    padding: '0.15rem 0.4rem',
+                    cursor: 'pointer',
+                    fontSize: '0.75rem',
+                  }}
+                >
+                  {copied ? 'Copied!' : 'Copy'}
+                </button>
+              )}
+            </div>
           </div>
         </div>
 
