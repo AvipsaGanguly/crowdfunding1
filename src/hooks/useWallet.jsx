@@ -59,10 +59,14 @@ export const WalletProvider = ({ children }) => {
    */
   const disconnect = useCallback(() => {
     disconnectWalletService();
+    try {
+      localStorage.removeItem('stellar_wallet_id');
+      localStorage.removeItem('stellar_wallet_address');
+    } catch {}
     setAddress('');
     setActiveWallet('');
     setIsModalOpen(false);
-    if (addToast) addToast('Wallet disconnected.', 'info');
+    if (addToast) addToast('Wallet disconnected successfully.', 'info');
   }, [addToast]);
 
   /**
