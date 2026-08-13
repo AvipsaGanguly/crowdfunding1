@@ -155,3 +155,26 @@ fn test_get_campaign_returns_none_for_invalid_id() {
         "Fetching non-existent campaign ID must fail"
     );
 }
+
+#[test]
+fn test_close_campaign_deactivates_campaign() {
+    let f = setup();
+    let owner = Address::generate(&f.env);
+
+    let id = f.cm.create_campaign(
+        &owner,
+        &soroban_sdk::String::from_str(&f.env, "Closeable Campaign"),
+        &soroban_sdk::String::from_str(&f.env, "desc"),
+        &100_000_000i128,
+        &2_000_000u64,
+        &soroban_sdk::String::from_str(&f.env, "Tech"),
+    );
+
+    let meta_before = f.cm.get_campaign(&id);
+    assert!(meta_before.active, "Campaign must be active initially");
+
+    f.cm.close_campaign(&id);
+
+    let meta_after = f.cm.get_campaign(&id);
+    assert!(!meta_after.active, "Campaign must be inactive after close_campaign");
+}
