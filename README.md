@@ -110,6 +110,18 @@ StellarFund integrates `@creit.tech/stellar-wallets-kit` providing unified multi
 
 ---
 
+## ⚡ Soroban RPC Simulation & Transaction Execution Flow
+
+Every write transaction (Campaign Creation, XLM Donation, Campaign Withdrawal) follows a strict 5-phase execution pipeline managed by `src/hooks/useTransaction.js` and `src/services/contract.js`:
+
+1. **Transaction Assembly**: Builds Soroban transaction operation using `@stellar/stellar-sdk` with sequence numbers and network passphrase.
+2. **Soroban RPC Simulation**: Invokes `server.simulateTransaction(tx)` to simulate smart contract execution on-chain, calculating precise CPU/memory footprint, storage entries, and fee requirements.
+3. **Wallet Signing Prompt**: Assembles transaction XDR string and dispatches to connected user wallet (`stellar-wallets-kit.signTx(...)`).
+4. **Broadcast & Ledger Submission**: Transmits signed XDR envelope via `server.sendTransaction(signedTx)` to Stellar RPC nodes.
+5. **On-Chain Confirmation Polling**: Polls `server.getTransaction(txHash)` every 2s until ledger status transitions to `SUCCESS`.
+
+---
+
 ## 🌐 Live Demo
 
 - **Vercel Web App**: [https://crowdfunding1.vercel.app](https://crowdfunding1.vercel.app) *(or your deployed Vercel domain)*
