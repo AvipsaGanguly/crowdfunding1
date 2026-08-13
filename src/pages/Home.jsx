@@ -48,14 +48,26 @@ const Home = () => {
 
         {/* Filter Controls */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Search campaigns..."
-            className="input-field"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', maxWidth: '400px' }}
-          />
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <input
+              type="text"
+              placeholder="Search campaigns..."
+              className="input-field"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ width: '100%', maxWidth: '400px' }}
+            />
+            {(searchQuery || selectedCategory !== 'All') && (
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem' }}
+              >
+                Reset Filters
+              </button>
+            )}
+          </div>
 
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
             {categories.map(cat => (
