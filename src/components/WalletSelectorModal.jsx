@@ -7,9 +7,9 @@ const WalletSelectorModal = () => {
   if (!isModalOpen) return null;
 
   return (
-    <div className="modal-backdrop" onClick={() => !isConnecting && setIsModalOpen(false)}>
+    <div className="modal-backdrop" onClick={() => !isConnecting && setIsModalOpen(false)} role="dialog" aria-modal="true" aria-labelledby="wallet-modal-title">
       <div className="modal-content glass animate-fade-in" onClick={(e) => e.stopPropagation()}>
-        <h2 style={{ marginBottom: '0.5rem', textAlign: 'center' }}>Connect Wallet</h2>
+        <h2 id="wallet-modal-title" style={{ marginBottom: '0.5rem', textAlign: 'center' }}>Connect Wallet</h2>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', marginBottom: '1.5rem' }}>
           Select a wallet extension to authorize connection
         </p>
