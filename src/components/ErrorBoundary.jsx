@@ -11,21 +11,39 @@ class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    console.error("ErrorBoundary caught an error", error, errorInfo);
+    console.error('Unhandled application error:', error, errorInfo);
   }
+
+  handleReset = () => {
+    this.setState({ hasError: false, error: null });
+    window.location.href = '/';
+  };
 
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', padding: '2rem', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '3rem', color: 'var(--accent-red)' }}>Oops!</h1>
-          <p style={{ margin: '1rem 0' }}>Something went wrong. We are working on fixing it.</p>
-          <button className="btn btn-primary" onClick={() => window.location.reload()} aria-label="Reload Page">
-            Reload Page
-          </button>
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '60vh',
+          padding: '2rem',
+          textAlign: 'center'
+        }}>
+          <div className="glass-panel" style={{ maxWidth: '500px', width: '100%', padding: '2.5rem' }}>
+            <h2 style={{ color: '#ef4444', marginBottom: '1rem' }}>Something went wrong</h2>
+            <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem', fontSize: '0.95rem' }}>
+              An unexpected error occurred in the application view.
+            </p>
+            <button className="btn btn-primary" onClick={this.handleReset}>
+              Return to Homepage
+            </button>
+          </div>
         </div>
       );
     }
+
     return this.props.children;
   }
 }
