@@ -36,7 +36,15 @@ const CampaignDetails = () => {
 
   const handleDonate = async (e) => {
     e.preventDefault();
-    if (!donationAmount || Number(donationAmount) <= 0) return;
+    const amountNum = Number(donationAmount);
+    if (isNaN(amountNum) || amountNum < 0.1) {
+      setDonationError('Minimum donation amount is 0.1 XLM.');
+      return;
+    }
+    if (amountNum > 100_000) {
+      setDonationError('Maximum single donation amount is 100,000 XLM.');
+      return;
+    }
 
     setDonationError(null);
     try {
