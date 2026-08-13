@@ -70,3 +70,12 @@ fn test_token_balance_sanity() {
     let client = soroban_sdk::token::Client::new(&env, &token_addr);
     assert_eq!(client.balance(&user), 1_000i128);
 }
+
+#[test]
+fn test_register_multiple_campaigns_initializes_zero_funds() {
+    let (_, dm, _, _) = setup_dm_only();
+    dm.register_campaign(&1u64);
+    dm.register_campaign(&2u64);
+    assert_eq!(dm.get_campaign_funds(&1u64), 0i128);
+    assert_eq!(dm.get_campaign_funds(&2u64), 0i128);
+}
