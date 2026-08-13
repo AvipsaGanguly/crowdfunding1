@@ -197,15 +197,17 @@ npm run dev
 
 ## 🧪 Testing
 
-The platform maintains automated test coverage across both smart contract and frontend layers.
+The platform maintains comprehensive automated test coverage across both smart contract and frontend layers.
 
-### Run Smart Contract Tests (Rust)
+### 1. Smart Contract Tests (Rust / Soroban)
+Runs 10 unit and integration test cases across `campaign-manager` and `donation-manager` crates:
 ```bash
 cd contracts
 cargo test --workspace
 ```
 
-### Run Frontend Tests (Vitest)
+### 2. Frontend Test Suite (Vitest + React Testing Library)
+Runs 34 component and service test cases across 8 test suites (`formatUtils`, `explorerUtils`, `ProgressBar`, `WalletButton`, `CreateCampaign`, `Dashboard`, `stellarService`, `walletService`):
 ```bash
 npm test
 ```
