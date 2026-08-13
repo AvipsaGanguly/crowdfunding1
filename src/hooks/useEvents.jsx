@@ -1,8 +1,7 @@
-import React, { createContext, useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { fetchRecentEvents } from '../services/eventService';
 import { server } from '../services/contract';
-
-const EventContext = createContext();
+import { EventContext } from '../context/EventContext';
 
 export const EventProvider = ({ children }) => {
   const [events, setEvents] = useState([]);
@@ -58,5 +57,3 @@ export const EventProvider = ({ children }) => {
     </EventContext.Provider>
   );
 };
-
-export const useEvents = () => useContext(EventContext);

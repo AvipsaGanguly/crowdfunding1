@@ -1,6 +1,8 @@
 import React from 'react';
 
 const DonationSuccessModal = ({ donation, onClose }) => {
+  const [copied, setCopied] = React.useState(false);
+
   if (!donation) return null;
 
   const {
@@ -13,8 +15,6 @@ const DonationSuccessModal = ({ donation, onClose }) => {
     donorAddress,
     explorerUrl,
   } = donation;
-
-  const [copied, setCopied] = React.useState(false);
 
   const handleCopy = () => {
     if (hash) {

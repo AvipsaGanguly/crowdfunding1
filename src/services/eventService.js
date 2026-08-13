@@ -51,7 +51,7 @@ export const fetchRecentEvents = async (startLedger) => {
           type = 'CampaignCreated';
           parsedData = { campaignId: scValToNative(evt.topic[1]) };
         }
-      } catch (e) {
+      } catch {
         // Fallback for demo parsing
         type = 'GenericEvent';
       }

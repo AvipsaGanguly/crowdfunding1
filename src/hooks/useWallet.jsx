@@ -1,23 +1,13 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useToast } from './useToast';
 import {
   connectWallet as connectWalletService,
   disconnectWallet as disconnectWalletService,
-  switchWallet as switchWalletService,
   getActiveWallet,
   isWalletConnected,
   signTransaction as signTxService,
 } from '../services/wallet';
-
-const WalletContext = createContext();
-
-export const SUPPORTED_WALLET_LIST = [
-  { id: 'freighter', name: 'Freighter' },
-  { id: 'xbull', name: 'xBull' },
-  { id: 'albedo', name: 'Albedo' },
-  { id: 'lobstr', name: 'Lobstr' },
-  { id: 'rabet', name: 'Rabet' },
-];
+import { WalletContext, SUPPORTED_WALLET_LIST } from '../context/WalletContext';
 
 export const WalletProvider = ({ children }) => {
   const [address, setAddress] = useState('');
@@ -32,7 +22,7 @@ export const WalletProvider = ({ children }) => {
    * StellarWalletsKit.authModal().
    * If walletId is specified, connects directly to that wallet module and requests access.
    */
-  const connect = async (walletId = null) => {
+  const connect = useCallback(async (walletId = null) => {
     setIsConnecting(true);
     try {
       const res = await connectWalletService(walletId);
@@ -52,7 +42,7 @@ export const WalletProvider = ({ children }) => {
     } finally {
       setIsConnecting(false);
     }
-  };
+  }, [addToast]);
 
   /**
    * Disconnects current wallet and clears in-memory state completely.
@@ -84,7 +74,7 @@ export const WalletProvider = ({ children }) => {
     } else {
       setIsModalOpen(true);
     }
-  }, [addToast]);
+  }, [connect]);
 
   /**
    * Signs a transaction XDR with the active wallet.
@@ -124,5 +114,3 @@ export const WalletProvider = ({ children }) => {
     </WalletContext.Provider>
   );
 };
-
-export const useWallet = () => useContext(WalletContext);

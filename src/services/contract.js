@@ -1,4 +1,4 @@
-import { rpc, TransactionBuilder, Networks, Account, xdr } from '@stellar/stellar-sdk';
+import { rpc, TransactionBuilder } from '@stellar/stellar-sdk';
 
 const RPC_URL = import.meta.env.VITE_RPC_URL || 'https://soroban-testnet.stellar.org';
 const NETWORK_PASSPHRASE = import.meta.env.VITE_NETWORK_PASSPHRASE || 'Test SDF Network ; September 2015';
@@ -41,7 +41,7 @@ export const submitTransaction = async (signedTx) => {
   // If we received a raw XDR string (from the wallet kit), parse it first.
   let txToSubmit = signedTx;
   if (typeof signedTx === 'string') {
-    const { Transaction, FeeBumpTransaction, Networks } = await import('@stellar/stellar-sdk');
+    const { Transaction, FeeBumpTransaction } = await import('@stellar/stellar-sdk');
     try {
       txToSubmit = new Transaction(signedTx, NETWORK_PASSPHRASE);
     } catch {

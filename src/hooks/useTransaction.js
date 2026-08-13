@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useWallet } from './useWallet';
 import { useToast } from './useToast';
 import { submitTransaction, pollTransactionStatus, simulateTransaction } from '../services/contract';
-import { TransactionBuilder, rpc } from '@stellar/stellar-sdk';
+import { rpc } from '@stellar/stellar-sdk';
 
 export const useTransaction = () => {
   const { signTransaction, address } = useWallet();

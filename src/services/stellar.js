@@ -7,8 +7,6 @@
 
 import { rpc } from '@stellar/stellar-sdk';
 import {
-  server,
-  buildTransaction,
   simulateTransaction,
   submitTransaction,
   pollTransactionStatus,

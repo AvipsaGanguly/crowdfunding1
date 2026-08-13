@@ -77,7 +77,6 @@ import {
   withdraw,
   fetchCampaign,
   fetchAllCampaigns,
-  sendSorobanTransaction,
 } from '../services/stellar';
 import { isWalletConnected } from '../services/wallet';
 
