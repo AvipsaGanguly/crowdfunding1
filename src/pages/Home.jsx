@@ -107,6 +107,7 @@ const Home = () => {
                 goal={goal} 
                 daysLeft={daysLeft} 
                 image={c.image || c.imageUrl}
+                category={c.category}
               />
             );
           })
