@@ -245,6 +245,17 @@ npm run build
 ![Mobile responsive UI](image-3.png)
 ---
 
+## ✅ Production Readiness & Level 3 Checklist
+
+- [x] **Advanced Soroban Smart Contracts**: WASM compiled `CampaignManager` and `DonationManager` with cross-contract sub-invocations.
+- [x] **Event Streaming & Real-Time RPC Updates**: Polling event engine for ledger-level donation event decoding.
+- [x] **Multi-Wallet Integration**: Support for Freighter, xBull, Albedo, Lobstr, and Rabet via `@creit.tech/stellar-wallets-kit`.
+- [x] **CI/CD Pipeline**: GitHub Actions workflow testing Node 20 & Rust WASM targets on every push.
+- [x] **Automated Test Suite**: 34 Vitest frontend tests + 10 Soroban Rust contract tests.
+- [x] **Live Vercel Deployment**: Configured with SPA route rewrites and live SSL endpoints.
+
+---
+
 ## 🔮 Future Improvements
 
 - **Multi-Asset Support**: Expand beyond native XLM to support USDC and custom Stellar assets.
