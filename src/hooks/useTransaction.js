@@ -49,8 +49,17 @@ export const useTransaction = () => {
       return true;
 
     } catch (error) {
-      console.error(error);
-      addToast(error.message || 'Transaction failed.', 'error');
+      console.error('Transaction execution failed:', error);
+      const rawMsg = error?.message || '';
+      let cleanMsg = 'Transaction failed. Please try again.';
+      if (rawMsg.includes('User declined') || rawMsg.includes('User rejected')) {
+        cleanMsg = 'Transaction signing cancelled by user.';
+      } else if (rawMsg.includes('Simulation Error')) {
+        cleanMsg = 'Transaction simulation failed on Stellar Testnet.';
+      } else if (rawMsg) {
+        cleanMsg = rawMsg;
+      }
+      addToast(cleanMsg, 'error');
       return false;
     } finally {
       setIsPending(false);
