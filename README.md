@@ -86,6 +86,23 @@ The smart contract suite consists of two Rust contracts compiled for Soroban WAS
 
 ---
 
+## 👛 Multi-Wallet Architecture & Integration
+
+StellarFund integrates `@creit.tech/stellar-wallets-kit` providing unified multi-wallet support across 5 leading Stellar browser extensions and key managers:
+
+- **Freighter**: Official Stellar Development Foundation wallet extension.
+- **xBull**: Modular, high-security power user wallet.
+- **Albedo**: Web-based key manager requiring no extension installation.
+- **Lobstr**: Popular mobile & web wallet with QR authorization.
+- **Rabet**: Lightweight extension wallet for dApp power users.
+
+### Session Lifecycle Management:
+1. **Connection**: User selects provider -> wallet returns active public key -> stored in `localStorage.setItem('connectedWalletAddress')`.
+2. **Switching**: `switchWallet()` purges existing localStorage session and opens modal selector.
+3. **Disconnection**: `disconnect()` cleans up React context state, revokes stored keys, and resets UI.
+
+---
+
 ## 🔗 Transaction Hash Examples
 
 - **Campaign Deployment & Init Tx**: [`45a651b8ccf7671cdc22d51a04f4ea2f99d2ecbb6ff3c0739cffcead1909f58e`](https://stellar.expert/explorer/testnet/tx/45a651b8ccf7671cdc22d51a04f4ea2f99d2ecbb6ff3c0739cffcead1909f58e)
