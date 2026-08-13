@@ -4,6 +4,16 @@ import { useWallet } from '../hooks/useWallet';
 const WalletSelectorModal = () => {
   const { isModalOpen, setIsModalOpen, connect, isConnecting, supportedWallets } = useWallet();
 
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !isConnecting) {
+        setIsModalOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isConnecting, setIsModalOpen]);
+
   if (!isModalOpen) return null;
 
   return (
