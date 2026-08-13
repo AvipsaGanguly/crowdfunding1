@@ -8,6 +8,8 @@ import { LoadingSkeleton } from '../components/LoadingSpinner';
 const Home = () => {
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('All');
 
   useEffect(() => {
     const loadData = async () => {
@@ -24,13 +26,48 @@ const Home = () => {
     loadData();
   }, []);
 
+  const categories = ['All', 'Technology', 'Environment', 'Community', 'Art', 'General'];
+
+  const filteredCampaigns = campaigns.filter(c => {
+    const matchesSearch = (c.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          (c.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCategory = selectedCategory === 'All' || c.category === selectedCategory;
+    return matchesSearch && matchesCategory;
+  });
+
   return (
     <div className="animate-fade-in">
       <HeroSection />
       
       <div style={{ padding: '0 5%', marginBottom: '2rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1.5rem', marginBottom: '1.5rem' }}>
           <StatsCard label="Active Projects" value={campaigns.length.toString()} />
+        </div>
+
+        {/* Filter Controls */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <input
+            type="text"
+            placeholder="Search campaigns..."
+            className="input-field"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            style={{ width: '100%', maxWidth: '400px' }}
+          />
+
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`btn ${selectedCategory === cat ? 'btn-primary' : 'btn-outline'}`}
+                style={{ padding: '0.4rem 0.9rem', fontSize: '0.85rem' }}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -42,15 +79,15 @@ const Home = () => {
             <LoadingSkeleton height="350px" />
             <LoadingSkeleton height="350px" />
           </>
-        ) : campaigns.length === 0 ? (
+        ) : filteredCampaigns.length === 0 ? (
           <div style={{ padding: '3rem 1rem', textAlign: 'center', gridColumn: '1 / -1', background: 'rgba(255, 255, 255, 0.02)', borderRadius: '16px', border: '1px dashed rgba(255, 255, 255, 0.1)' }}>
-            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '1rem' }}>No active campaigns found on Stellar Testnet.</p>
-            <button className="btn btn-primary" onClick={() => window.location.reload()} style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}>
-              Refresh Campaigns
+            <p style={{ color: 'var(--text-muted)', fontSize: '1.1rem', marginBottom: '1rem' }}>No campaigns matching your filter criteria.</p>
+            <button className="btn btn-outline" onClick={() => { setSearchQuery(''); setSelectedCategory('All'); }} style={{ padding: '0.6rem 1.5rem', fontSize: '0.9rem' }}>
+              Clear Filters
             </button>
           </div>
         ) : (
-          campaigns.map((c, idx) => {
+          filteredCampaigns.map((c, idx) => {
             const id = c.id !== undefined && c.id !== null ? String(c.id) : String(idx + 1);
             const title = c.title ? String(c.title) : 'Untitled Campaign';
             const desc = c.description && String(c.description).trim() !== '' ? String(c.description) : 'No description provided.';
