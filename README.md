@@ -274,6 +274,21 @@ npm run build
 ![Mobile responsive UI](image-3.png)
 ---
 
+## 🛠️ Troubleshooting & Environment Configuration
+
+### Required Environment Variables (.env / Vercel Settings):
+- `VITE_CAMPAIGN_MANAGER_ID`: Deployed Soroban `CampaignManager` contract ID.
+- `VITE_DONATION_MANAGER_ID`: Deployed Soroban `DonationManager` contract ID.
+- `VITE_RPC_URL`: Stellar Soroban RPC endpoint (`https://soroban-testnet.stellar.org`).
+- `VITE_NETWORK_PASSPHRASE`: Network Passphrase (`Test SDF Network ; September 2015`).
+
+### Common Issues & Resolution:
+- **Blank screen on deployment**: Ensure `VITE_` variables are registered under Vercel Settings -> Environment Variables.
+- **User rejection error (`HostError: Error(Auth, InvalidAction)`)**: Ensure Freighter/xBull extension is set to `Testnet` network.
+- **Vitest Windows child process timeout**: Run tests with `npx vitest run --fileParallelism=false`.
+
+---
+
 ## ✅ Production Readiness & Level 3 Checklist
 
 - [x] **Advanced Soroban Smart Contracts**: WASM compiled `CampaignManager` and `DonationManager` with cross-contract sub-invocations.
