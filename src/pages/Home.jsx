@@ -4,8 +4,10 @@ import StatsCard from '../components/StatsCard';
 import CampaignCard from '../components/CampaignCard';
 import { fetchAllCampaigns } from '../services/campaign';
 import { LoadingSkeleton } from '../components/LoadingSpinner';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const Home = () => {
+  useDocumentTitle('Discover Campaigns');
   const [campaigns, setCampaigns] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
