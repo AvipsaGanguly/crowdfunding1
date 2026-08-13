@@ -145,3 +145,13 @@ fn test_create_campaign_rejects_zero_goal() {
         "Zero goal must be rejected with InvalidInput"
     );
 }
+
+#[test]
+fn test_get_campaign_returns_none_for_invalid_id() {
+    let f = setup();
+    let result = f.cm.try_get_campaign(&999u64);
+    assert!(
+        result.is_err(),
+        "Fetching non-existent campaign ID must fail"
+    );
+}
