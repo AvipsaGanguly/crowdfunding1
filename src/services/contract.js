@@ -75,3 +75,14 @@ export const pollTransactionStatus = async (txHash) => {
 
   return getTxResponse;
 };
+
+/**
+ * Helper to get currently configured contract addresses for diagnostic inspection.
+ */
+export const getContractAddresses = () => {
+  return {
+    campaignManager: import.meta.env.VITE_CAMPAIGN_MANAGER_ID || 'CAPFOLYX5LZRFZZUPV374HOEXGLIA7QN3SR5SHA5V75W6PBZBK4KM52V',
+    donationManager: import.meta.env.VITE_DONATION_MANAGER_ID || 'CAYUM76UIQMEQLE4JBMV2BJWWALTX3T5SGTKV75XBGCE2GQHN3A6YJKR',
+    rpcUrl: RPC_URL,
+  };
+};
