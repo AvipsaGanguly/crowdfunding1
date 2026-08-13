@@ -40,6 +40,10 @@ const CreateCampaign = () => {
       alert('Goal must be a positive number.');
       return;
     }
+    if (goalXLM > 1_000_000) {
+      alert('Maximum campaign goal is 1,000,000 XLM.');
+      return;
+    }
     const goalStroops = BigInt(Math.round(goalXLM * 10_000_000));
 
     // ── Parse deadline ───────────────────────────────────────────────────────
