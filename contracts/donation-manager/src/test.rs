@@ -79,3 +79,11 @@ fn test_register_multiple_campaigns_initializes_zero_funds() {
     assert_eq!(dm.get_campaign_funds(&1u64), 0i128);
     assert_eq!(dm.get_campaign_funds(&2u64), 0i128);
 }
+
+#[test]
+fn test_register_campaign_idempotency() {
+    let (_, dm, _, _) = setup_dm_only();
+    dm.register_campaign(&100u64);
+    dm.register_campaign(&100u64);
+    assert_eq!(dm.get_campaign_funds(&100u64), 0i128);
+}
