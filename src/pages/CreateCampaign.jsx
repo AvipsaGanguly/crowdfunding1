@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTransaction } from '../hooks/useTransaction';
 import { buildCreateCampaignTx } from '../services/campaign';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
 
 const CreateCampaign = () => {
+  useDocumentTitle('Create Campaign');
   const navigate = useNavigate();
   const { execute, isPending } = useTransaction();
   const [form, setForm] = useState({
