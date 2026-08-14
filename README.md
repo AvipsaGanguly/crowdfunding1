@@ -152,6 +152,23 @@ cargo test --workspace --manifest-path contracts/Cargo.toml
 
 ---
 
+## 🔌 Multi-Wallet Integration Architecture
+
+### Supported Wallets
+The platform integrates **`@creit.tech/stellar-wallets-kit`** to support native browser wallet extensions:
+- **Freighter** (Stellar Development Foundation)
+- **xBull Wallet**
+- **Albedo** (Web-based Stellar signing)
+- **Lobstr Wallet**
+- **Rabet**
+
+### Wallet Session Management
+- **Explicit Connection**: Users must explicitly invoke the wallet selector modal before accessing active transaction capabilities.
+- **Session Cleanup**: Disconnecting a wallet clears in-memory React state and removes persisted local storage keys (`stellar_wallet_id`, `stellar_wallet_address`).
+- **Account Switching**: Re-authenticating automatically updates current wallet address and triggers re-simulation of open transactions.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
