@@ -169,6 +169,19 @@ The platform integrates **`@creit.tech/stellar-wallets-kit`** to support native 
 
 ---
 
+## 📊 Real-Time Event Listening & Polling Architecture
+
+### Event Polling Loop
+- The application runs a background ledger sequence polling loop (`useEvents.jsx`) querying the Stellar Testnet RPC server every **7 seconds**.
+- The `lastLedgerRef` tracks the most recently parsed ledger sequence to ensure zero event duplication.
+
+### Topic Event Decoding (`eventService.js`)
+- **`campaign_created`**: Decodes `(symbol_short!("diag"), symbol_short!("goal"))` topics and emits `CampaignCreated` events to the live feed.
+- **`donation_received`**: Decodes `(Symbol("donate"), campaign_id, donor_address)` topics and emits `DonationReceived` events to update progress bars in real time.
+- **Memory Optimization**: Keeps a bounded in-memory sliding window of the **20 most recent events** to maintain minimal browser memory usage.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
