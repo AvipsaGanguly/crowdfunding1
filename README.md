@@ -182,6 +182,20 @@ The platform integrates **`@creit.tech/stellar-wallets-kit`** to support native 
 
 ---
 
+## 🧪 Vitest Mocking & Execution Architecture
+
+### 1. Test Isolation & Mocking Strategy
+- **`vi.mock('../hooks/useWallet')`**: Simulates connected wallet sessions, public key addresses, and signature modal triggers during component testing (`Navbar`, `Dashboard`, `WalletButton`).
+- **`vi.mock('../services/contract')`**: Stubs RPC simulation, transaction submission, and status polling to test UI error boundaries without hitting live testnet nodes.
+
+### 2. Windows Environment Execution Flag
+- On Windows operating systems, Vitest executes test suites sequentially using `--fileParallelism=false` to prevent worker thread timeout issues:
+```bash
+npx vitest run --fileParallelism=false
+```
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
