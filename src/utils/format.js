@@ -1,3 +1,5 @@
+import { STROOPS_PER_XLM } from './constants';
+
 /**
  * Address & Currency formatting utilities.
  */
@@ -22,6 +24,6 @@ export const truncateAddress = (address, startChars = 6, endChars = 6) => {
  */
 export const stroopsToXlm = (stroops) => {
   if (stroops === undefined || stroops === null) return '0';
-  const num = Number(stroops) / 10_000_000;
+  const num = Number(stroops) / STROOPS_PER_XLM;
   return num.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 7 });
 };
