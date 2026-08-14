@@ -120,6 +120,22 @@ cargo test --workspace --manifest-path contracts/Cargo.toml
 
 ---
 
+## 🔒 Security Architecture & Storage Management
+
+### 1. Non-Custodial Wallet Authorization
+- Every state-modifying transaction (`create_campaign`, `donate`, `withdraw`) requires cryptographic user authorization (`require_auth()`). Donors and creators maintain full non-custodial control over their funds.
+
+### 2. Soroban Cross-Contract Sub-Invocation Authorization
+- Cross-contract balance accounting calls from `CampaignManager` to `DonationManager` use `env.authorize_as_current_contract(...)` to satisfy Soroban host runtime sub-invocation authorization checks without throwing `Error(Auth, InvalidAction)`.
+
+### 3. Instance Storage Lifetime (TTL) Extension
+- Persistent contract state entries extend their storage lifetime via `env.storage().instance().extend_ttl(...)` during invocation to prevent storage eviction on Stellar Testnet ledgers.
+
+### 4. Input Boundary Validation & Error Boundaries
+- Strict frontend boundary validation (title length limits, positive donation amounts, future deadlines) coupled with root-level React `ErrorBoundary` catchers to prevent runtime state crashes.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
