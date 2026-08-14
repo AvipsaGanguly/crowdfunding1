@@ -19,5 +19,7 @@ describe('explorer utilities', () => {
 
   it('returns base URL when contract address is empty', () => {
     expect(getContractExplorerUrl('')).toBe('https://stellar.expert/explorer/testnet');
+    expect(getContractExplorerUrl(null)).toBe('https://stellar.expert/explorer/testnet');
+    expect(getContractExplorerUrl(undefined)).toBe('https://stellar.expert/explorer/testnet');
   });
 });
