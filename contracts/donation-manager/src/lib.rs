@@ -51,6 +51,13 @@ impl DonationManager {
             .unwrap_or(0i128)
     }
 
+    /// Processes a donor contribution to a campaign vault.
+    /// Transfers native XLM tokens from donor to contract, updates balance accounting, and emits event.
+    ///
+    /// # Arguments
+    /// * `donor` - Address of donor initiating contribution (requires cryptographic signature)
+    /// * `campaign_id` - Target campaign unique identifier
+    /// * `amount` - Amount in Stroops to contribute (must be > 0)
     pub fn donate(env: Env, donor: Address, campaign_id: u64, amount: i128) -> Result<(), Error> {
         donor.require_auth();
 
@@ -104,6 +111,11 @@ impl DonationManager {
         Ok(())
     }
 
+    /// Transfers all accumulated campaign vault funds to the campaign owner address.
+    /// Can only be called by the verified campaign creator after target goal/deadline criteria are met.
+    ///
+    /// # Arguments
+    /// * `campaign_id` - Campaign identifier to withdraw raised funds for
     pub fn withdraw(env: Env, campaign_id: u64) -> Result<(), Error> {
         let cm: Address = env
             .storage()
