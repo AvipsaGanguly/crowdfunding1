@@ -10,6 +10,7 @@ describe('explorer utilities', () => {
   it('returns base URL when hash is empty', () => {
     expect(getTxExplorerUrl('')).toBe('https://stellar.expert/explorer/testnet');
     expect(getTxExplorerUrl(null)).toBe('https://stellar.expert/explorer/testnet');
+    expect(getTxExplorerUrl(undefined)).toBe('https://stellar.expert/explorer/testnet');
   });
 
   it('generates valid contract explorer URL', () => {
