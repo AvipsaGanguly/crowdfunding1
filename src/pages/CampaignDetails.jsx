@@ -6,6 +6,11 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import ProgressBar from '../components/ProgressBar';
 import { LoadingSkeleton } from '../components/LoadingSpinner';
 import DonationSuccessModal from '../components/DonationSuccessModal';
+import {
+  MIN_DONATION_AMOUNT_XLM,
+  MAX_DONATION_AMOUNT_XLM,
+  STROOPS_PER_XLM,
+} from '../utils/constants';
 
 const CampaignDetails = () => {
   const { id } = useParams();
@@ -49,18 +54,18 @@ const CampaignDetails = () => {
       return;
     }
 
-    if (numericAmount < 0.1) {
-      setDonationError('Minimum donation amount is 0.1 XLM.');
+    if (numericAmount < MIN_DONATION_AMOUNT_XLM) {
+      setDonationError(`Minimum donation amount is ${MIN_DONATION_AMOUNT_XLM} XLM.`);
       return;
     }
 
-    if (numericAmount > 100000) {
-      setDonationError('Maximum single donation threshold is 100,000 XLM.');
+    if (numericAmount > MAX_DONATION_AMOUNT_XLM) {
+      setDonationError(`Maximum single donation threshold is ${MAX_DONATION_AMOUNT_XLM.toLocaleString()} XLM.`);
       return;
     }
 
     try {
-      const stroopAmount = numericAmount * 10000000;
+      const stroopAmount = numericAmount * STROOPS_PER_XLM;
       const res = await donate(id, stroopAmount);
 
       const donationData = {
