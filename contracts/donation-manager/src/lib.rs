@@ -10,6 +10,7 @@ pub struct DonationManager;
 
 #[contractimpl]
 impl DonationManager {
+    /// Initializes DonationManager with CampaignManager and native XLM token addresses.
     pub fn init(env: Env, campaign_manager: Address, token_address: Address) {
         env.storage()
             .instance()
@@ -19,7 +20,8 @@ impl DonationManager {
             .set(&DataKey::TokenAddress, &token_address);
     }
 
-    /// Register a campaign. Can only be called by the Campaign Manager.
+    /// Registers a new campaign and initializes campaign balance accounting to 0 Stroops.
+    /// Requires cross-contract sub-invocation authorization from CampaignManager.
     pub fn register_campaign(env: Env, campaign_id: u64) -> Result<(), Error> {
         let cm: Address = env
             .storage()
