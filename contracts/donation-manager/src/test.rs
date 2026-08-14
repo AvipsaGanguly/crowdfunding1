@@ -87,3 +87,14 @@ fn test_register_campaign_idempotency() {
     dm.register_campaign(&100u64);
     assert_eq!(dm.get_campaign_funds(&100u64), 0i128);
 }
+
+#[test]
+fn test_get_campaign_funds_query_isolation() {
+    let (_, dm, _, _) = setup_dm_only();
+    dm.register_campaign(&10u64);
+    dm.register_campaign(&20u64);
+
+    assert_eq!(dm.get_campaign_funds(&10u64), 0i128);
+    assert_eq!(dm.get_campaign_funds(&20u64), 0i128);
+    assert_eq!(dm.get_campaign_funds(&30u64), 0i128, "Unregistered campaign 30 returns 0 balance");
+}
