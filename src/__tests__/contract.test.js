@@ -8,4 +8,12 @@ describe('contract service helpers', () => {
     expect(config.donationManager).toBeDefined();
     expect(config.rpcUrl).toContain('stellar.org');
   });
+
+  it('ensures contract addresses are non-empty strings', () => {
+    const config = getContractAddresses();
+    expect(typeof config.campaignManager).toBe('string');
+    expect(config.campaignManager.length).toBeGreaterThan(10);
+    expect(typeof config.donationManager).toBe('string');
+    expect(config.donationManager.length).toBeGreaterThan(10);
+  });
 });
