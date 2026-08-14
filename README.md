@@ -235,6 +235,12 @@ npx vitest run --fileParallelism=false
 
 ---
 
+## 📄 License & Open-Source Guidelines
+
+This project is open-source software licensed under the **[MIT License](https://opensource.org/licenses/MIT)**. You are free to inspect, modify, fork, and deploy this codebase for educational and commercial applications on Stellar Soroban networks.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
