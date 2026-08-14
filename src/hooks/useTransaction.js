@@ -52,10 +52,14 @@ export const useTransaction = () => {
       console.error('Transaction execution failed:', error);
       const rawMsg = error?.message || '';
       let cleanMsg = 'Transaction failed. Please try again.';
-      if (rawMsg.includes('User declined') || rawMsg.includes('User rejected')) {
+      if (rawMsg.includes('User declined') || rawMsg.includes('User rejected') || rawMsg.includes('cancelled')) {
         cleanMsg = 'Transaction signing cancelled by user.';
-      } else if (rawMsg.includes('Simulation Error')) {
-        cleanMsg = 'Transaction simulation failed on Stellar Testnet.';
+      } else if (rawMsg.includes('Simulation Error') || rawMsg.includes('simulation failed')) {
+        cleanMsg = 'Soroban contract simulation failed. Please verify campaign status and inputs.';
+      } else if (rawMsg.includes('insufficient') || rawMsg.includes('underfunded')) {
+        cleanMsg = 'Insufficient testnet XLM balance for transaction fee and amount.';
+      } else if (rawMsg.includes('timeout') || rawMsg.includes('timed out')) {
+        cleanMsg = 'Stellar Testnet RPC confirmation timed out. Please check your transaction history.';
       } else if (rawMsg) {
         cleanMsg = rawMsg;
       }
