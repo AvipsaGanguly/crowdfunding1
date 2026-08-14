@@ -178,3 +178,29 @@ fn test_close_campaign_deactivates_campaign() {
     let meta_after = f.cm.get_campaign(&id);
     assert!(!meta_after.active, "Campaign must be inactive after close_campaign");
 }
+
+#[test]
+fn test_create_campaign_counter_increment() {
+    let f = setup();
+    let owner = Address::generate(&f.env);
+
+    let id1 = f.cm.create_campaign(
+        &owner,
+        &soroban_sdk::String::from_str(&f.env, "Campaign One"),
+        &soroban_sdk::String::from_str(&f.env, "Desc 1"),
+        &100_000_000i128,
+        &2_000_000u64,
+        &soroban_sdk::String::from_str(&f.env, "Tech"),
+    );
+    assert_eq!(id1, 1u64);
+
+    let id2 = f.cm.create_campaign(
+        &owner,
+        &soroban_sdk::String::from_str(&f.env, "Campaign Two"),
+        &soroban_sdk::String::from_str(&f.env, "Desc 2"),
+        &200_000_000i128,
+        &3_000_000u64,
+        &soroban_sdk::String::from_str(&f.env, "Art"),
+    );
+    assert_eq!(id2, 2u64);
+}
