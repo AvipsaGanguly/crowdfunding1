@@ -58,6 +58,21 @@ npm run build
 
 ---
 
+## 🛠️ Technology Stack & Dependencies
+
+### Frontend & UI Layer
+- **React 19 & Vite 8**: High-performance module bundling and reactive UI component tree
+- **React Router 7**: Declarative client-side route navigation (`/`, `/create-campaign`, `/campaign/:id`, `/dashboard`, `/about`)
+- **Vanilla CSS3**: HSL-customized variables, glassmorphism design system, micro-animations, and dynamic mobile responsiveness
+- **Testing**: **Vitest** + `@testing-library/react` (17 test suites, 47 unit tests)
+
+### Stellar Blockchain & Smart Contract Layer
+- **Stellar Soroban WASM Engine**: `soroban-sdk` v22 (Rust smart contract framework)
+- **`@stellar/stellar-sdk`**: RPC client interaction, transaction envelope parsing, and XDR serialization
+- **`@creit.tech/stellar-wallets-kit`**: Multi-wallet support (Freighter, xBull, Albedo, Lobstr, Rabet)
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
