@@ -9,6 +9,7 @@ describe('format utilities', () => {
   });
 
   it('handles null or non-string address gracefully', () => {
+    expect(truncateAddress('')).toBe('N/A');
     expect(truncateAddress(null)).toBe('N/A');
     expect(truncateAddress(undefined)).toBe('N/A');
     expect(truncateAddress(12345)).toBe('N/A');
