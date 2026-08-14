@@ -205,6 +205,23 @@ npx vitest run --fileParallelism=false
 
 ---
 
+## 🛡️ Production Deployment & Continuous Integration
+
+### 1. Vercel Hosting Platform
+- **Live dApp URL**: [https://crowdfunding1-henna.vercel.app](https://crowdfunding1-henna.vercel.app)
+- **Deployment Settings**: Framework preset `Vite`, build command `npm run build`, output directory `dist/`.
+
+### 2. GitHub Actions CI/CD Quality Gate (`.github/workflows/ci.yml`)
+- **Node & Rust Toolchains**: Automatic caching of Cargo dependencies, Rust `wasm32-unknown-unknown` targets, and Node modules.
+- **Automated Verification Pipeline**:
+  1. **Syntax & Style Audit**: `npx oxlint`
+  2. **Frontend Unit Test Suite**: `npx vitest run --fileParallelism=false`
+  3. **Vite Production Compilation**: `npm run build`
+  4. **Smart Contract Compilation**: `cargo check --target wasm32-unknown-unknown`
+  5. **Smart Contract Unit Tests**: `cargo test --workspace`
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
