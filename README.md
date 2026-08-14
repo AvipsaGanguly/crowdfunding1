@@ -15,6 +15,49 @@ Watch the full demo walkthrough of the application here:
 
 ---
 
+## 🚀 How to Run Locally
+
+### Prerequisites
+- **Node.js** v18+ and **npm** v9+
+- **Rust** v1.75+ and **wasm32-unknown-unknown** target (for smart contracts)
+- A browser with a Stellar wallet extension installed (e.g., [Freighter](https://www.freighter.app/))
+
+### 1. Clone & Install Dependencies
+```bash
+git clone https://github.com/AvipsaGanguly/crowdfunding1.git
+cd crowdfunding1
+npm install
+```
+
+### 2. Configure Environment Variables
+Create a local `.env` file in the project root:
+```env
+VITE_RPC_URL=https://soroban-testnet.stellar.org
+VITE_NETWORK_PASSPHRASE="Test SDF Network ; September 2015"
+VITE_CAMPAIGN_MANAGER_ID=CAPFOLYX5LZRFZZUPV374HOEXGLIA7QN3SR5SHA5V75W6PBZBK4KM52V
+VITE_DONATION_MANAGER_ID=CAYUM76UIQMEQLE4JBMV2BJWWALTX3T5SGTKV75XBGCE2GQHN3A6YJKR
+```
+
+### 3. Start Development Server
+```bash
+npm run dev
+```
+Open [http://localhost:5173](http://localhost:5173) in your browser.
+
+### 4. Execute Test Suites & Build
+```bash
+# Run Vitest frontend test suite
+npm test
+
+# Run Rust smart contract test suite
+cargo test --workspace --manifest-path contracts/Cargo.toml
+
+# Compile Vite production bundle
+npm run build
+```
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
