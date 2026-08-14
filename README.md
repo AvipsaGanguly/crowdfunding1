@@ -196,6 +196,15 @@ npx vitest run --fileParallelism=false
 
 ---
 
+## 🎨 Design System & Glassmorphism Aesthetics
+
+### Visual Aesthetic Principles
+- **Function-Driven Design**: Intuitive navigation hierarchy, direct wallet interaction models, zero decorative fluff.
+- **Glassmorphism Theme**: Semi-transparent dark container panels (`rgba(20, 24, 40, 0.95)`), backdrop blur filters (`backdrop-filter: blur(8px)`), subtle borders (`1px solid rgba(255, 255, 255, 0.15)`), and cyan glow highlights (`#00f2fe`).
+- **Typography & Details**: Curated Google Fonts (`Plus Jakarta Sans`), fluid kerning, precise letter-spacing, and responsive container bounds.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
