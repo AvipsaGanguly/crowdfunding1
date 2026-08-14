@@ -32,6 +32,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Testing & Coverage
+coverage/
+.vitest/
+.coverage/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
