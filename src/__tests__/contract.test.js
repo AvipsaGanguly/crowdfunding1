@@ -16,4 +16,9 @@ describe('contract service helpers', () => {
     expect(typeof config.donationManager).toBe('string');
     expect(config.donationManager.length).toBeGreaterThan(10);
   });
+
+  it('includes default Stellar Testnet network passphrase', () => {
+    const config = getContractAddresses();
+    expect(config.networkPassphrase).toContain('Test SDF Network');
+  });
 });
