@@ -73,6 +73,35 @@ npm run build
 
 ---
 
+## 📂 Project Directory Structure
+
+```text
+crowdfunding1/
+├── contracts/                        # Soroban Rust Smart Contracts Workspace
+│   ├── campaign-manager/             # Campaign metadata & registry contract
+│   │   ├── src/ (lib.rs, types.rs, test.rs)
+│   │   └── Cargo.toml
+│   ├── donation-manager/             # XLM vault custody & donation tracking contract
+│   │   ├── src/ (lib.rs, types.rs, test.rs)
+│   │   └── Cargo.toml
+│   └── Cargo.toml
+├── src/                              # React 19 Frontend Application
+│   ├── components/                   # UI components (Navbar, CampaignCard, Footer, etc.)
+│   ├── context/                      # Context providers (WalletContext, EventContext, ToastContext)
+│   ├── hooks/                        # Custom hooks (useWallet, useTransaction, useEvents, etc.)
+│   ├── pages/                        # Page views (Home, CreateCampaign, CampaignDetails, Dashboard)
+│   ├── services/                     # Stellar SDK & RPC contract interaction services
+│   ├── styles/                       # Modular CSS design system tokens
+│   ├── utils/                        # Format utilities & constant definitions
+│   └── __tests__/                    # Vitest frontend test suites
+├── screenshots/                      # Application walkthrough screenshots
+├── .env.example                      # Environment variables template
+├── README.md                         # Comprehensive project documentation & guide
+└── vite.config.js                    # Vite bundler & test configuration
+```
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
