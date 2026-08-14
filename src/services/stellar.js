@@ -23,8 +23,7 @@ import {
   getActiveWallet,
   isWalletConnected,
 } from './wallet';
-
-const EXPLORER_BASE_URL = 'https://stellar.expert/explorer/testnet/tx/';
+import { STELLAR_EXPERT_TESTNET_URL } from '../utils/constants';
 
 /**
  * Parses and standardizes errors encountered during transaction execution.
@@ -150,7 +149,7 @@ export async function sendSorobanTransaction(buildTxFn) {
       throw parseStellarError(pollErr);
     }
 
-    const explorerUrl = `${EXPLORER_BASE_URL}${hash}`;
+    const explorerUrl = `${STELLAR_EXPERT_TESTNET_URL}${hash}`;
     const ledger = pollResult?.ledger || pollResult?.latestLedger || 'N/A';
     let timestamp = 'N/A';
     if (pollResult?.latestLedgerCloseTime) {
