@@ -1,12 +1,12 @@
 # Dependencies
-node_modules
-.pnpm-store
+node_modules/
+.pnpm-store/
 
 # Production & Build outputs
-dist
-dist-ssr
-build
-.vercel
+dist/
+dist-ssr/
+build/
+.vercel/
 
 # Rust / Soroban Build Artifacts & Snapshots
 target/
