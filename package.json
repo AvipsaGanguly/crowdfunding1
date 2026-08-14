@@ -1,7 +1,7 @@
 {
   "name": "crowdfunding1",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,10 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "dependencies": {
     "@creit.tech/stellar-wallets-kit": "^2.5.0",
