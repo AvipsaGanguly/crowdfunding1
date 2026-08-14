@@ -23,4 +23,10 @@ describe('format utilities', () => {
     expect(stroopsToXlm(5_000_000)).toBe('0.5');
     expect(stroopsToXlm(0)).toBe('0');
   });
+
+  it('handles null, undefined, and BigInt stroop amounts gracefully', () => {
+    expect(stroopsToXlm(null)).toBe('0');
+    expect(stroopsToXlm(undefined)).toBe('0');
+    expect(stroopsToXlm(10_000_000n)).toBe('1');
+  });
 });
