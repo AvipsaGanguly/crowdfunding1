@@ -3,6 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTransaction } from '../hooks/useTransaction';
 import { buildCreateCampaignTx } from '../services/campaign';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import {
+  MIN_TITLE_LENGTH,
+  MAX_TITLE_LENGTH,
+  MAX_DESCRIPTION_LENGTH,
+  MAX_CAMPAIGN_GOAL_XLM,
+  STROOPS_PER_XLM,
+} from '../utils/constants';
 
 const CreateCampaign = () => {
   useDocumentTitle('Create Campaign');
@@ -25,14 +32,14 @@ const CreateCampaign = () => {
 
     // ── Validate title & description ──────────────────────────────────────────
     const trimmedTitle = form.title.trim();
-    if (trimmedTitle.length < 3 || trimmedTitle.length > 100) {
-      alert('Campaign title must be between 3 and 100 characters.');
+    if (trimmedTitle.length < MIN_TITLE_LENGTH || trimmedTitle.length > MAX_TITLE_LENGTH) {
+      alert(`Campaign title must be between ${MIN_TITLE_LENGTH} and ${MAX_TITLE_LENGTH} characters.`);
       return;
     }
 
     const trimmedDescription = (form.description || '').trim();
-    if (trimmedDescription.length > 500) {
-      alert('Description cannot exceed 500 characters.');
+    if (trimmedDescription.length > MAX_DESCRIPTION_LENGTH) {
+      alert(`Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters.`);
       return;
     }
 
@@ -42,11 +49,11 @@ const CreateCampaign = () => {
       alert('Goal must be a positive number.');
       return;
     }
-    if (goalXLM > 1_000_000) {
-      alert('Maximum campaign goal is 1,000,000 XLM.');
+    if (goalXLM > MAX_CAMPAIGN_GOAL_XLM) {
+      alert(`Maximum campaign goal is ${MAX_CAMPAIGN_GOAL_XLM.toLocaleString()} XLM.`);
       return;
     }
-    const goalStroops = BigInt(Math.round(goalXLM * 10_000_000));
+    const goalStroops = BigInt(Math.round(goalXLM * STROOPS_PER_XLM));
 
     // ── Parse deadline ───────────────────────────────────────────────────────
     const deadlineDate = new Date(`${form.deadline}T23:59:59`);
