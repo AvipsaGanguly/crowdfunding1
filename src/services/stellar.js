@@ -82,14 +82,20 @@ function isSimulationError(sim) {
 
 /**
  * Core transaction pipeline for executing Soroban transactions on Stellar Testnet.
- * Handles simulation, assembling footprint/resources, wallet signing, RPC submission, and polling.
+ * Step 1: Pre-flight wallet session verification.
+ * Step 2: Build contract call envelope.
+ * Step 3: Simulate transaction on Soroban RPC to inspect state footprint & resource usage.
+ * Step 4: Assemble transaction footprint with simulated gas & storage parameters.
+ * Step 5: Delegate signature collection to active wallet kit provider (Freighter/xBull/Albedo).
+ * Step 6: Broadcast signed XDR envelope to Stellar RPC network.
+ * Step 7: Poll ledger sequence until transaction confirmation.
  * 
  * @param {Function} buildTxFn - Function (sourceAddress) => Promise<Transaction> that constructs the unsigned transaction
  * @returns {Promise<{hash: string, explorerUrl: string, status: string, result: any}>} Transaction status payload
  * @throws {Error} Descriptive error on failure
  */
 export async function sendSorobanTransaction(buildTxFn) {
-  // 1. Check wallet connection
+  // Step 1: Verify active wallet connection and public address before initiating RPC calls
   if (!isWalletConnected()) {
     throw new Error('Wallet is disconnected. Please connect a valid Stellar wallet before proceeding.');
   }
@@ -100,10 +106,10 @@ export async function sendSorobanTransaction(buildTxFn) {
   }
 
   try {
-    // 2. Build transaction envelope
+    // Step 2: Build raw transaction envelope targeting campaign manager / donation manager contract
     const rawTx = await buildTxFn(address);
 
-    // 3. Simulate transaction to retrieve footprint and resource limits
+    // Step 3: Simulate transaction via Soroban RPC server to derive CPU/RAM footprint and storage key access
     let sim;
     try {
       sim = await simulateTransaction(rawTx);
@@ -116,10 +122,10 @@ export async function sendSorobanTransaction(buildTxFn) {
       throw parseStellarError(new Error(`Soroban simulation failed: ${errDetail}`));
     }
 
-    // 4. Assemble transaction with simulated resources & footprints
+    // Step 4: Attach RPC simulation footprint and resource fees to produce a valid final transaction
     const preparedTx = rpc.assembleTransaction(rawTx, sim).build();
 
-    // 5. Sign transaction via Wallet Service
+    // Step 5: Present transaction to the user's connected wallet extensions for cryptographic signing
     let signedXdr;
     try {
       const signedResult = await signTransaction(preparedTx.toXDR());
@@ -128,7 +134,7 @@ export async function sendSorobanTransaction(buildTxFn) {
       throw parseStellarError(signErr);
     }
 
-    // 6. Submit transaction to RPC server
+    // Step 6: Submit the signed transaction XDR to the Stellar Testnet RPC server
     let hash;
     try {
       hash = await submitTransaction(signedXdr);
@@ -136,7 +142,7 @@ export async function sendSorobanTransaction(buildTxFn) {
       throw parseStellarError(submitErr);
     }
 
-    // 7. Poll until transaction reaches SUCCESS or FAILED state
+    // Step 7: Poll transaction status across ledger closes until finalized (SUCCESS / FAILED)
     let pollResult;
     try {
       pollResult = await pollTransactionStatus(hash);
