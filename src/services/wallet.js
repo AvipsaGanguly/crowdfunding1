@@ -190,8 +190,10 @@ export function getActiveWallet() {
  * @returns {Promise<{signedTxXdr: string, signerAddress: string}>} Signed transaction result
  */
 export async function signTransaction(xdr, opts = {}) {
-  if (!isWalletConnected()) {
-    throw new Error('No wallet connected. Please connect a wallet first.');
+  // Edge Case Handling: Verify active wallet connection to catch mid-transaction disconnects
+  if (!isWalletConnected() || !activeAddress) {
+    disconnectWallet();
+    throw new Error('Wallet was disconnected mid-transaction. Please reconnect your wallet.');
   }
   if (!xdr || typeof xdr !== 'string') {
     throw new Error('Invalid XDR string provided for signing.');
