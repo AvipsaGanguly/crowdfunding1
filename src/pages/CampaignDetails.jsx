@@ -36,19 +36,31 @@ const CampaignDetails = () => {
 
   const handleDonate = async (e) => {
     e.preventDefault();
-    const amountNum = Number(donationAmount);
-    if (isNaN(amountNum) || amountNum < 0.1) {
-      setDonationError('Minimum donation amount is 0.1 XLM.');
-      return;
-    }
-    if (amountNum > 100_000) {
-      setDonationError('Maximum single donation amount is 100,000 XLM.');
+    if (!isConnected) {
+      setIsModalOpen(true);
       return;
     }
 
-    setDonationError(null);
+    setDonationError('');
+
+    const numericAmount = Number(donationAmount);
+    if (!donationAmount || isNaN(numericAmount) || numericAmount <= 0) {
+      setDonationError('Please enter a valid positive donation amount.');
+      return;
+    }
+
+    if (numericAmount < 0.1) {
+      setDonationError('Minimum donation amount is 0.1 XLM.');
+      return;
+    }
+
+    if (numericAmount > 100000) {
+      setDonationError('Maximum single donation threshold is 100,000 XLM.');
+      return;
+    }
+
     try {
-      const stroopAmount = Number(donationAmount) * 10000000;
+      const stroopAmount = numericAmount * 10000000;
       const res = await donate(id, stroopAmount);
 
       const donationData = {
@@ -248,4 +260,3 @@ const CampaignDetails = () => {
 };
 
 export default CampaignDetails;
-
