@@ -176,7 +176,10 @@ fn test_close_campaign_deactivates_campaign() {
     f.cm.close_campaign(&id);
 
     let meta_after = f.cm.get_campaign(&id);
-    assert!(!meta_after.active, "Campaign must be inactive after close_campaign");
+    assert!(
+        !meta_after.active,
+        "Campaign must be inactive after close_campaign"
+    );
 }
 
 #[test]

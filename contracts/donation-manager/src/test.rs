@@ -96,5 +96,9 @@ fn test_get_campaign_funds_query_isolation() {
 
     assert_eq!(dm.get_campaign_funds(&10u64), 0i128);
     assert_eq!(dm.get_campaign_funds(&20u64), 0i128);
-    assert_eq!(dm.get_campaign_funds(&30u64), 0i128, "Unregistered campaign 30 returns 0 balance");
+    assert_eq!(
+        dm.get_campaign_funds(&30u64),
+        0i128,
+        "Unregistered campaign 30 returns 0 balance"
+    );
 }
