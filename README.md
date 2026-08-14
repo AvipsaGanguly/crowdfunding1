@@ -102,6 +102,24 @@ crowdfunding1/
 
 ---
 
+## 🧪 Testing Suite & Quality Gate
+
+The codebase includes automated unit test suites for both frontend React modules and Soroban smart contract crates:
+
+### 1. Frontend Test Suite (Vitest)
+```bash
+npm test
+```
+- **18 Test Suites / 48 Tests**: Component rendering, custom hooks (`useDocumentTitle`), RPC helper utilities, wallet state management, address truncation, and modal interactions.
+
+### 2. Smart Contract Test Suite (Cargo / Rust)
+```bash
+cargo test --workspace --manifest-path contracts/Cargo.toml
+```
+- **13 Rust Contract Tests**: Verifies cross-contract registration idempotency, campaign goal validation, storage instance TTL extensions, campaign deactivation, and balance accounting.
+
+---
+
 ## 📖 Project Overview
 
 Traditional crowdfunding platforms suffer from high platform fees, cross-border payment friction, delayed payouts, and centralized control. This project leverages the speed, minimal fees, and native cross-contract capabilities of the **Stellar Soroban** smart contract engine to provide a fully decentralized, non-custodial crowdfunding dApp.
