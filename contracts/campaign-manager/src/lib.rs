@@ -12,14 +12,24 @@ pub struct CampaignManager;
 
 #[contractimpl]
 impl CampaignManager {
-    /// Initialize with the donation manager address (which handles the funds)
+    /// Initializes the CampaignManager contract with the associated DonationManager address.
+    /// The DonationManager receives registration calls whenever a new campaign is initialized.
     pub fn init(env: Env, donation_manager: Address) {
         env.storage()
             .instance()
             .set(&DataKey::DonationManager, &donation_manager);
     }
 
-    /// Create a new campaign and notify the donation manager
+    /// Creates a new campaign, stores campaign metadata in persistent storage,
+    /// extends instance lifetime storage TTL, and registers the campaign with DonationManager.
+    ///
+    /// # Arguments
+    /// * `owner` - Public address of campaign creator (requires cryptographic signature)
+    /// * `title` - Campaign title string
+    /// * `description` - Detailed campaign description
+    /// * `goal` - Target fundraising goal in Stroops (must be > 0)
+    /// * `deadline` - Unix timestamp when campaign closes (must be > current ledger timestamp)
+    /// * `category` - Campaign category string
     pub fn create_campaign(
         env: Env,
         owner: Address,
